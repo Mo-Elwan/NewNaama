@@ -9,6 +9,15 @@
   const PAGE_SIZE = 10;
   const MAX_PAGE_LINKS = 5;
   const JOURNEY_PAGE = "journey.html";
+  const URGENT_DAYS = 14;
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  const RENEWAL_OPERATION = "تجديد";
+  // تراخيص مستفيد افتراضي للعرض فقط؛ في المنصة الفعلية تأتي من حساب المستفيد بعد تسجيل الدخول.
+  const PROACTIVE_SAMPLES = [
+    { serviceId: "0cba1840-b7bf-4160-89f1-59cf3ff97974", licenseNo: "BK-1447-20381", daysLeft: 9 },
+    { serviceId: "0c21f3d2-6dc7-4db7-b815-ba9bdc30800a", licenseNo: "FS-1446-77215", daysLeft: 27 },
+    { serviceId: "87239420-5e31-4564-8162-6b1a84e9d4b8", licenseNo: "PL-1445-10954", daysLeft: 48, stage: "operational" },
+  ];
 
   const list = document.getElementById("guide-list");
   const data = window.NAAMA_DATA;
@@ -34,6 +43,7 @@
     clear: document.getElementById("clear-filters"),
     pagination: document.getElementById("pagination"),
     journeyTypes: document.getElementById("journey-types"),
+    proactive: document.getElementById("proactive-list"),
   };
   const state = { query: "", page: 1, selected: Object.fromEntries(FILTER_GROUPS.map((g) => [g.key, new Set()])) };
   const textIndex = new Map(services.map((s) => [s.id, normalize([s.name, s.desc, s.category].join(" "))]));
@@ -121,10 +131,63 @@
 
   // ---------- البطاقات ----------
 
-  /** يفتح رحلة المستفيد على أول مسار للخدمة مع البحث باسمها لتظهر وحدها. */
-  function journeyUrl(service) {
+  /** يفتح رحلة المستفيد على أول مسار للخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد. */
+  function journeyUrl(service, action) {
+    const params = new URLSearchParams({ q: service.name });
+    if (action) params.set("action", action.name);
     const path = service.paths[0] ? `#/${service.paths[0]}` : "#/";
-    return `${JOURNEY_PAGE}?q=${encodeURIComponent(service.name)}${path}`;
+    return `${JOURNEY_PAGE}?${params}${path}`;
+  }
+
+  // ---------- الخدمات الاستباقية ----------
+
+  function renewalAction(service, stage) {
+    return service.actions.find((a) => a.operation === RENEWAL_OPERATION && (!stage || a.stage === stage));
+  }
+
+  /** صيغة العدد العربية: يوم واحد، يومين، 3-10 أيام، 11 فأكثر يومًا. */
+  function daysText(days) {
+    if (days === 1) return "يوم واحد";
+    if (days === 2) return "يومين";
+    return days <= 10 ? `${days} أيام` : `${days} يومًا`;
+  }
+
+  function formatDate(date) {
+    return date.toLocaleDateString("ar-SA-u-ca-gregory-nu-latn", { year: "numeric", month: "long", day: "numeric" });
+  }
+
+  function proactiveCard(service, action, sample) {
+    const isUrgent = sample.daysLeft <= URGENT_DAYS;
+    const card = createElement("article", "proactive-card" + (isUrgent ? " urgent" : ""));
+    const head = createElement("div", "proactive-card-head");
+    head.append(icon("bell", "proactive-icon"), createElement("span", "badge " + (isUrgent ? "badge-danger" : "badge-warning"),
+      isUrgent ? "عاجل" : "قريبًا"));
+    const expiry = new Date(Date.now() + sample.daysLeft * DAY_MS);
+    card.append(
+      head,
+      createElement("h3", null, action.name),
+      createElement("p", "proactive-text", `تنتهي رخصتك خلال ${daysText(sample.daysLeft)}، في ${formatDate(expiry)}.`),
+      createElement("span", "proactive-meta", `رقم الرخصة: ${sample.licenseNo}`),
+    );
+    const button = createElement("a", "btn btn-primary", "جدّد الآن ←");
+    button.href = journeyUrl(service, action);
+    card.append(button);
+    return card;
+  }
+
+  function renderProactive() {
+    const servicesById = new Map(services.map((s) => [s.id, s]));
+    const cards = PROACTIVE_SAMPLES.map((sample) => {
+      const service = servicesById.get(sample.serviceId);
+      const action = service && renewalAction(service, sample.stage);
+      if (!action) {
+        console.warn(`الخدمة الاستباقية غير موجودة أو بلا إجراء تجديد: ${sample.serviceId}`);
+        return null;
+      }
+      return proactiveCard(service, action, sample);
+    }).filter(Boolean);
+    el.proactive.closest("section").hidden = !cards.length;
+    el.proactive.replaceChildren(...cards);
   }
 
   function guideCard(service) {
@@ -215,6 +278,7 @@
   el.sort.addEventListener("change", render);
   el.clear.addEventListener("click", clearFilters);
   renderJourneyTypes();
+  renderProactive();
   renderFilters();
   render();
 })();

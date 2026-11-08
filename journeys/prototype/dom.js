@@ -50,6 +50,7 @@
     service: "M7 3h7l5 5v13H7z M14 3v5h5 M10 13h6 M10 17h4",
     category: "M12 21v-9 M12 12C12 7 8 5 4 5c0 5 3 7 8 7z M12 14c0-4 3-6 8-6 0 4-3 6-8 6z",
     journey: "M5 19a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M19 9a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M7 17h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6",
+    bell: "M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 20a2 2 0 0 0 4 0",
   };
 
   function icon(iconKey, className) {

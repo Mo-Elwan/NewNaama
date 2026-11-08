@@ -260,6 +260,27 @@ button, input, select { font-family: inherit; }
 .journey-type .title { font-weight: 700; font-size: 15px; line-height: 1.4; }
 .journey-type .count { font-size: 12px; color: #d3f0df; }
 
+/* ---------- الخدمات الاستباقية ---------- */
+.proactive { margin-bottom: 24px; }
+.proactive[hidden] { display: none; }
+.proactive-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; margin-bottom: 12px; }
+.proactive-head h2 { margin: 0; font-size: 22px; font-weight: 700; color: var(--primary-dark); }
+.proactive-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.proactive-card {
+  background: #fff; border-radius: 12px; padding: 16px; box-shadow: var(--card-shadow);
+  border-inline-start: 4px solid #f79009; display: flex; flex-direction: column; gap: 6px;
+}
+.proactive-card.urgent { border-inline-start-color: #d92d20; }
+.proactive-card-head { display: flex; justify-content: space-between; align-items: center; }
+.proactive-icon { width: 22px; height: 22px; fill: none; stroke: #b54708; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.proactive-card.urgent .proactive-icon { stroke: #b42318; }
+.proactive-card h3 { margin: 0; font-size: 16px; font-weight: 700; }
+.proactive-text { margin: 0; font-size: 14px; color: var(--text-paragraph); }
+.proactive-meta { font-size: 12px; color: var(--text-secondary); }
+.proactive-card .btn { align-self: flex-start; margin-top: 6px; }
+.badge-warning { background: #fffaeb; border-color: #fedf89; color: #93370d; }
+.badge-danger { background: #fef3f2; border-color: #fecdca; color: #912018; }
+
 /* ---------- صفحة الدليل: التصفية والنتائج ---------- */
 .guide-layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 28px; margin-top: 28px; align-items: start; }
 .filters { background: #fff; border-radius: 16px; padding: 20px; box-shadow: var(--card-shadow); }

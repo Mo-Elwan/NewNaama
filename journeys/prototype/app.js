@@ -107,6 +107,7 @@
 
   function serviceCard(service, { showPaths }) {
     const card = createElement("article", "service-card");
+    card.dataset.serviceId = service.id;
     card.append(iconCircle("service"), createElement("h3", null, service.name));
     if (service.desc) {
       const desc = createElement("p", "desc", service.desc);
@@ -213,6 +214,7 @@
     for (const [stage, stageActions] of groups) {
       const button = createElement("button", "stage-button", `${data.licenseStages[stage]} (${stageActions.length})`);
       button.type = "button";
+      button.dataset.stage = stage;
       button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", () => {
         selectOnly(stageButtons, button);
@@ -440,6 +442,25 @@
     el.content.replaceChildren(query.length >= MIN_SEARCH_LENGTH ? renderSearchResults(route, services, query) : view);
   }
 
+  /** يختار نوع الترخيص ثم الإجراء نيابة عن المستفيد، كما لو ضغط عليهما بنفسه. */
+  function preselectAction(actionName) {
+    const servicesById = new Map(data.services.map((s) => [s.id, s]));
+    for (const card of el.content.querySelectorAll(".service-card")) {
+      const service = servicesById.get(card.dataset.serviceId);
+      const action = service && service.actions.find((a) => a.name === actionName);
+      if (!action) continue;
+      const stageButton = [...card.querySelectorAll(".stage-button")].find((b) => b.dataset.stage === action.stage);
+      if (stageButton) stageButton.click();
+      const chip = [...card.querySelectorAll(".action-chip")].find((c) => c.title === actionName);
+      if (chip) {
+        chip.click();
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+    console.warn(`لم يُعثر على الإجراء المطلوب في نتائج الرحلة: ${actionName}`);
+  }
+
   function goBack() {
     const route = parseRoute();
     location.hash = "#/" + route.slice(0, -1).join("/");
@@ -452,7 +473,9 @@
   });
   el.search.addEventListener("input", render);
   el.back.addEventListener("click", goBack);
-  // يسمح لصفحة الدليل بفتح الرحلة على خدمة محددة: journey.html?q=اسم الخدمة#/المسار
-  el.search.value = new URLSearchParams(location.search).get("q") || "";
+  // يسمح لصفحة الدليل بفتح الرحلة على خدمة وإجراء محددين: journey.html?q=اسم الخدمة&action=اسم الإجراء#/المسار
+  const params = new URLSearchParams(location.search);
+  el.search.value = params.get("q") || "";
   render();
+  if (params.get("action")) preselectAction(params.get("action"));
 })();
