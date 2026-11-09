@@ -1,14 +1,13 @@
 /**
  * نافذة "التحقق من الأهلية والرسوم": تعرض أسئلة الخدمة وحاسبة الرسوم،
- * وتُظهر زر التقديم فقط عند استيفاء كل الشروط.
+ * وتُظهر زر التقديم عند الاستيفاء، أو خطوات "كيف تصبح مؤهلًا" عند الاختلاف.
  */
 (function (root) {
   "use strict";
 
-  const { createElement, safeUrl, externalLink } = root.NaamaDom;
-  const { describeFee, calculateFee, evaluate, formatAmount } = root.NaamaEligibility;
+  const { createElement, safeUrl, externalLink, journeyUrl } = root.NaamaDom;
+  const { describeFee, calculateFee, evaluate, howToQualify, formatAmount } = root.NaamaEligibility;
 
-  const NOT_AVAILABLE_MESSAGE = "التقديم غير متاح، يرجى استيفاء الشروط المذكورة أولاً";
   const dialog = document.getElementById("eligibility-dialog");
 
   function sectionTitle(text) {
@@ -94,20 +93,39 @@
     return box;
   }
 
-  function failureResult(reasons) {
-    const box = createElement("div", "result-box error");
-    box.append(createElement("strong", null, "لا تتوافق إجاباتك مع شروط التقديم"));
-    box.append(createElement("p", null, "أسباب عدم التوافق:"));
-    const list = createElement("ul");
-    reasons.forEach((reason) => list.append(createElement("li", null, reason)));
-    box.append(list, createElement("p", "fixed-message", NOT_AVAILABLE_MESSAGE));
+  function nextStepsResult(failed, context) {
+    const box = createElement("div", "result-box next-steps");
+    box.append(createElement("strong", null, "كيف تصبح مؤهلًا لهذه الخدمة"));
+    box.append(createElement("p", null, "الشروط التالية غير مستوفاة. أكملها ثم أعد التحقق من الأهلية."));
+    const list = createElement("ol", "next-steps-list");
+    for (const step of howToQualify(failed, context)) {
+      const item = createElement("li", "next-step");
+      item.append(createElement("p", null, step.how));
+      if (step.service) {
+        item.append(externalLink("btn btn-outline", `ابدأ: ${step.linkLabel} ←`,
+          journeyUrl(step.service, step.action, context.typeKey)));
+      } else if (step.url) {
+        item.append(externalLink("btn btn-outline", `ابدأ من ${step.linkLabel} ←`, step.url));
+      }
+      list.append(item);
+    }
+    box.append(list);
     return box;
   }
 
-  function buildForm({ questions, fee, url }) {
+  function markFailedQuestions(form, questions, failed) {
+    const failedIds = new Set(failed.map((q) => q.id));
+    for (const question of questions) {
+      const fieldset = form.querySelector(`input[name="q-${question.id}"]`)?.closest("fieldset");
+      if (fieldset) fieldset.classList.toggle("failed", failedIds.has(question.id));
+    }
+  }
+
+  function buildForm({ questions, fee, url, service, action, typeKey, services }) {
     const form = createElement("form", "modal-body");
     const resultArea = createElement("div", "result-area");
     resultArea.setAttribute("aria-live", "polite");
+    const qualifyContext = { services, currentService: service, currentAction: action, typeKey };
 
     form.append(sectionTitle("الرسوم"), createElement("p", "fee-text", describeFee(fee)));
     if (fee.kind === "calculator") form.append(feeCalculatorFields(fee.calculator));
@@ -122,12 +140,18 @@
     footer.append(submit);
     form.append(footer, resultArea);
 
-    form.addEventListener("change", () => resultArea.replaceChildren());
+    form.addEventListener("change", () => {
+      resultArea.replaceChildren();
+      markFailedQuestions(form, questions, []);
+    });
     form.addEventListener("submit", (event) => {
       event.preventDefault();
       if (!form.reportValidity()) return;
-      const { eligible, reasons } = evaluate(questions, readAnswers(form, questions));
-      resultArea.replaceChildren(eligible ? successResult(url, feeResultText(form, fee)) : failureResult(reasons));
+      const { eligible, failed } = evaluate(questions, readAnswers(form, questions));
+      markFailedQuestions(form, questions, failed);
+      resultArea.replaceChildren(
+        eligible ? successResult(url, feeResultText(form, fee)) : nextStepsResult(failed, qualifyContext)
+      );
       resultArea.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
     return form;
@@ -135,7 +159,7 @@
 
   /**
    * يفتح النافذة لخدمة أو إجراء.
-   * @param {{title: string, subtitle?: string, url: string, questions: object[], fee: object}} target
+   * @param {{title: string, subtitle?: string, url: string, questions: object[], fee: object, service?: object, action?: object, typeKey?: string, services?: object[]}} target
    * url يجب أن يكون رابط http/https صالحًا (تتكفل الصفحة بالرجوع لمنصة نما عند غيابه).
    */
   function open(target) {

@@ -25,8 +25,10 @@
     return;
   }
 
-  const { createElement, iconCircle, icon, normalizeArabic: normalize, journeyUrl, JOURNEY_PAGE } = window.NaamaDom;
+  const { createElement, iconCircle, icon, journeyUrl, JOURNEY_PAGE } = window.NaamaDom;
+  const { tokenize, trackQuery, renderPopularChips } = window.NaamaSearch;
   const services = data.services.filter((s) => s.published);
+  const searchIndex = window.NaamaSearch.createIndex(services);
   const typesOf = (service) => new Set(service.paths.map((path) => path.split("/")[0]));
   const FILTER_GROUPS = [
     { key: "type", title: "فئات المستفيدين", valuesOf: typesOf, labelOf: (key) => data.taxonomy[key].label },
@@ -45,9 +47,9 @@
     proactive: document.getElementById("proactive-list"),
     lifeEvents: document.getElementById("life-events-list"),
     lifeEventTypes: document.getElementById("life-event-types"),
+    suggestions: document.getElementById("search-suggestions"),
   };
   const state = { query: "", page: 1, selected: Object.fromEntries(FILTER_GROUPS.map((g) => [g.key, new Set()])) };
-  const textIndex = new Map(services.map((s) => [s.id, normalize([s.name, s.desc, s.category].join(" "))]));
 
   // ---------- الرحلة ----------
 
@@ -117,17 +119,41 @@
     });
   }
 
-  function matchesQuery(service, terms) {
-    const text = textIndex.get(service.id);
-    return terms.every((term) => text.includes(term));
+  function visibleServices() {
+    const hits = window.NaamaSearch.search(searchIndex, state.query).filter((hit) => matchesFilters(hit.service));
+    if (!tokenize(state.query).length) {
+      const direction = el.sort.value === "za" ? -1 : 1;
+      return hits.map((hit) => hit.service).sort((a, b) => direction * a.name.localeCompare(b.name, "ar"));
+    }
+    return hits.map((hit) => hit.service);
   }
 
-  function visibleServices() {
-    const terms = normalize(state.query).split(/\s+/).filter(Boolean);
-    const direction = el.sort.value === "za" ? -1 : 1;
-    return services
-      .filter((s) => matchesFilters(s) && matchesQuery(s, terms))
-      .sort((a, b) => direction * a.name.localeCompare(b.name, "ar"));
+  function applyQuery(query) {
+    state.query = query.trim();
+    el.search.value = query;
+    state.page = 1;
+    render();
+  }
+
+  function emptyResults() {
+    const box = createElement("div", "empty");
+    const searching = tokenize(state.query).length > 0;
+    box.append(createElement("p", null, searching
+      ? `لم نجد خدمات تطابق «${state.query}». جرّب كلمة أخرى أو اختر من الأكثر بحثًا.`
+      : "لا توجد خدمات مطابقة. جرّب كلمات أخرى أو امسح التصفية."));
+    if (searching) {
+      const hints = createElement("div", "search-suggestions");
+      renderPopularChips(hints, applyQuery);
+      box.append(hints);
+    }
+    return box;
+  }
+
+  function renderSuggestions() {
+    if (!el.suggestions) return;
+    const searching = tokenize(state.query).length > 0;
+    el.suggestions.hidden = searching;
+    if (!searching) renderPopularChips(el.suggestions, applyQuery);
   }
 
   // ---------- البطاقات ----------
@@ -284,10 +310,10 @@
     renderCount(results);
     el.clear.hidden = !Object.values(state.selected).some((set) => set.size);
     const pageItems = results.slice((state.page - 1) * PAGE_SIZE, state.page * PAGE_SIZE);
-    list.replaceChildren(...(pageItems.length
-      ? pageItems.map(guideCard)
-      : [createElement("div", "empty", "لا توجد خدمات مطابقة. جرّب كلمات أخرى أو امسح التصفية.")]));
+    list.replaceChildren(...(pageItems.length ? pageItems.map(guideCard) : [emptyResults()]));
     renderPagination(pageCount);
+    renderSuggestions();
+    if (tokenize(state.query).length) trackQuery(state.query, results.length);
   }
 
   function clearFilters() {
@@ -299,11 +325,7 @@
 
   state.query = new URLSearchParams(location.search).get("q") || "";
   el.search.value = state.query;
-  el.search.addEventListener("input", () => {
-    state.query = el.search.value.trim();
-    state.page = 1;
-    render();
-  });
+  el.search.addEventListener("input", () => applyQuery(el.search.value));
   el.sort.addEventListener("change", render);
   el.clear.addEventListener("click", clearFilters);
   renderJourneyTypes();
