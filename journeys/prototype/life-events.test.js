@@ -2,12 +2,17 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const path = require("node:path");
-const { LIFE_EVENTS, resolveLifeEvent, progress, stepsLabel } = require("./life-events.js");
+const { LIFE_EVENTS, resolveLifeEvent, eventsForType, progress, feeTotals, stepsLabel } = require("./life-events.js");
 
-function loadServices() {
-  global.window = {};
-  require(path.join(__dirname, "data.js"));
-  return global.window.NAAMA_DATA.services;
+// data.js يُسند إلى window ولا يعيد قيمة، وrequire يخزنه مؤقتًا، لذا نحمّله مرة واحدة.
+let cachedData;
+function loadData() {
+  if (!cachedData) {
+    global.window = {};
+    require(path.join(__dirname, "data.js"));
+    cachedData = global.window.NAAMA_DATA;
+  }
+  return cachedData;
 }
 
 const SERVICES = [
@@ -45,14 +50,39 @@ test("stepsLabel follows Arabic number agreement", () => {
   assert.equal(stepsLabel(2), "خطوتان");
   assert.equal(stepsLabel(5), "5 خطوات");
   assert.equal(stepsLabel(12), "12 خطوة");
+  assert.equal(stepsLabel(0), "0 خطوة");
 });
 
-test("every configured life event resolves against the real services data", () => {
-  const services = loadServices();
+test("feeTotals sums fixed fees and counts free and unknown ones separately", () => {
+  const steps = [{ fee: { kind: "fixed", amount: 100 } }, { fee: { kind: "fixed", amount: 50 } },
+    { fee: { kind: "free" } }, { fee: { kind: "study" } }, {}].map((service) => ({ service }));
+  assert.deepEqual(feeTotals(steps), { fixedTotal: 150, freeCount: 1, unknownCount: 2 });
+});
+
+test("eventsForType returns only that beneficiary type's events", () => {
+  assert.ok(eventsForType("company").length > 0);
+  assert.ok(eventsForType("company").every((e) => e.type === "company"));
+  assert.deepEqual(eventsForType("unknown"), []);
+});
+
+test("every configured life event is valid against the real services data", () => {
+  const data = loadData();
   const ids = new Set();
   for (const event of LIFE_EVENTS) {
     assert.ok(!ids.has(event.id), `معرّف مكرر: ${event.id}`);
     ids.add(event.id);
-    assert.deepEqual(resolveLifeEvent(event, services).errors, [], event.title);
+    assert.ok(data.taxonomy[event.type], `نوع مستفيد غير معروف في "${event.title}": ${event.type}`);
+    assert.ok(event.steps.some((s) => !s.optional), `"${event.title}" يحتاج خطوة إلزامية واحدة على الأقل`);
+    const { steps, errors } = resolveLifeEvent(event, data.services);
+    assert.deepEqual(errors, [], event.title);
+    for (const { service } of steps) {
+      assert.ok(service.paths.some((p) => p.startsWith(`${event.type}/`)),
+        `الخدمة "${service.name}" غير متاحة لنوع المستفيد ${event.type} في "${event.title}"`);
+    }
   }
+});
+
+test("every beneficiary type has at least one life event", () => {
+  const data = loadData();
+  for (const typeKey of Object.keys(data.taxonomy)) assert.ok(eventsForType(typeKey).length, typeKey);
 });

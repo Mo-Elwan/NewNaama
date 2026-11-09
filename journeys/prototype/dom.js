@@ -8,12 +8,15 @@
   const NAAMA_PLATFORM_URL = "https://naama.sa";
   const JOURNEY_PAGE = "journey.html";
 
-  /** يفتح رحلة المستفيد على أول مسار للخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد. */
-  function journeyUrl(service, action) {
+  /**
+   * يفتح رحلة المستفيد على مسار الخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد.
+   * typeKey يفضّل مسار نوع المستفيد نفسه، لأن الخدمة قد تظهر لأكثر من نوع وتختلف شروطها بينها.
+   */
+  function journeyUrl(service, action, typeKey) {
     const params = new URLSearchParams({ q: service.name });
     if (action) params.set("action", action.name);
-    const path = service.paths[0] ? `#/${service.paths[0]}` : "#/";
-    return `${JOURNEY_PAGE}?${params}${path}`;
+    const path = service.paths.find((p) => typeKey && p.startsWith(`${typeKey}/`)) || service.paths[0];
+    return `${JOURNEY_PAGE}?${params}${path ? `#/${path}` : "#/"}`;
   }
 
   function createElement(tag, className, text) {

@@ -34,7 +34,7 @@
     const attrs = [
       `href="${item.href}"`,
       isActive ? 'class="active" aria-current="page"' : "",
-      item.external ? EXTERNAL : "",
+      item.external ? `class="nav-external" ${EXTERNAL}` : "",
     ].join(" ");
     return `<a ${attrs}>${item.label}${item.isNew ? '<span class="nav-new">جديد</span>' : ""}</a>`;
   }

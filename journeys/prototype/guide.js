@@ -44,6 +44,7 @@
     journeyTypes: document.getElementById("journey-types"),
     proactive: document.getElementById("proactive-list"),
     lifeEvents: document.getElementById("life-events-list"),
+    lifeEventTypes: document.getElementById("life-event-types"),
   };
   const state = { query: "", page: 1, selected: Object.fromEntries(FILTER_GROUPS.map((g) => [g.key, new Set()])) };
   const textIndex = new Map(services.map((s) => [s.id, normalize([s.name, s.desc, s.category].join(" "))]));
@@ -133,21 +134,38 @@
 
   // ---------- أحداث الحياة والأعمال ----------
 
+  function lifeEventChip(event, stepsLabel) {
+    const link = createElement("a", "life-event-chip");
+    link.href = `events.html#/${event.type}/${event.id}`;
+    link.append(icon(event.type), createElement("span", "title", event.title),
+      createElement("span", "count", stepsLabel(event.steps.length)));
+    return link;
+  }
+
+  /** المستفيد يختار نوعه أولًا، ثم تظهر أحداث هذا النوع فقط. */
   function renderLifeEvents() {
     if (!window.NaamaLifeEvents) {
       console.warn("لم يُحمَّل life-events.js؛ سيُخفى قسم أحداث الحياة والأعمال.");
       el.lifeEvents.closest("section").hidden = true;
       return;
     }
-    const { LIFE_EVENTS: events, stepsLabel } = window.NaamaLifeEvents;
-    el.lifeEvents.closest("section").hidden = !events.length;
-    el.lifeEvents.replaceChildren(...events.map((event) => {
-      const link = createElement("a", "life-event-chip");
-      link.href = `events.html#/${event.id}`;
-      link.append(icon(event.type), createElement("span", "title", event.title),
-        createElement("span", "count", stepsLabel(event.steps.length)));
-      return link;
+    const { eventsForType, stepsLabel, eventsLabel } = window.NaamaLifeEvents;
+    const types = Object.keys(data.taxonomy).filter((typeKey) => eventsForType(typeKey).length);
+    el.lifeEvents.closest("section").hidden = !types.length;
+    const showType = (typeKey) => {
+      el.lifeEventTypes.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.type === typeKey)));
+      el.lifeEvents.replaceChildren(...eventsForType(typeKey).map((event) => lifeEventChip(event, stepsLabel)));
+    };
+    el.lifeEventTypes.replaceChildren(...types.map((typeKey) => {
+      const button = createElement("button", "type-tab");
+      button.type = "button";
+      button.dataset.type = typeKey;
+      button.append(icon(typeKey), createElement("span", null, data.taxonomy[typeKey].label),
+        createElement("span", "count", eventsLabel(eventsForType(typeKey).length)));
+      button.addEventListener("click", () => showType(typeKey));
+      return button;
     }));
+    if (types.length) showType(types[0]);
   }
 
   // ---------- الخدمات الاستباقية ----------
