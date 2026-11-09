@@ -51,7 +51,7 @@ button, input, select { font-family: inherit; }
   margin-inline-start: 6px; padding: 0 6px; border-radius: 10px; font-size: 11px; font-weight: 600;
   background: #f79009; color: #fff;
 }
-.header-search { position: relative; margin-inline-start: auto; align-self: center; width: 220px; }
+.header-search { position: relative; margin-inline-start: auto; align-self: center; width: 190px; flex-shrink: 0; }
 .header-search input {
   width: 100%; height: 40px; border: 1px solid var(--neutral-300); border-radius: 6px;
   padding: 0 40px 0 12px; font-size: 14px; outline: none; background: #fff;
@@ -60,10 +60,10 @@ button, input, select { font-family: inherit; }
 .header-search .search-icon { right: 12px; width: 18px; height: 18px; }
 .brand { display: flex; align-items: center; }
 .brand img { display: block; height: 40px; width: auto; }
-.main-nav { display: flex; align-items: stretch; flex-wrap: wrap; }
+.main-nav { display: flex; align-items: stretch; overflow-x: auto; scrollbar-width: none; }
 .main-nav a {
-  display: flex; align-items: center; padding: 0 14px; color: var(--text-default);
-  text-decoration: none; font-size: 15px; font-weight: 500;
+  display: flex; align-items: center; padding: 0 10px; color: var(--text-default);
+  text-decoration: none; font-size: 14px; font-weight: 500; white-space: nowrap;
 }
 .main-nav a:hover { color: var(--primary); }
 .main-nav a.active { background: var(--primary); color: #fff; border-radius: 0 0 4px 4px; }
@@ -259,6 +259,49 @@ button, input, select { font-family: inherit; }
 .journey-type svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .journey-type .title { font-weight: 700; font-size: 15px; line-height: 1.4; }
 .journey-type .count { font-size: 12px; color: #d3f0df; }
+
+/* ---------- أحداث الحياة والأعمال ---------- */
+.life-events { margin-bottom: 24px; }
+.life-events[hidden] { display: none; }
+.see-all { margin-inline-start: auto; text-decoration: none; }
+.life-events-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.life-event-chip {
+  display: flex; flex-direction: column; gap: 4px; padding: 14px; border-radius: 12px; background: #fff;
+  border: 1px solid var(--success-200); color: var(--text-default); text-decoration: none; transition: border-color .15s, transform .15s;
+}
+.life-event-chip:hover, .life-event-chip:focus-visible { border-color: var(--primary); transform: translateY(-2px); outline: none; }
+.life-event-chip svg { width: 24px; height: 24px; fill: none; stroke: var(--primary-icon); stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.life-event-chip .title { font-weight: 700; font-size: 15px; }
+.life-event-chip .count { font-size: 12px; color: var(--text-secondary); }
+.events-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.event-summary { font-size: 14px; color: var(--text-paragraph); }
+
+.event-progress { display: grid; gap: 8px; max-width: 920px; margin-bottom: 24px; font-weight: 600; color: var(--primary-dark); }
+.progress-track { height: 10px; border-radius: 5px; background: var(--neutral-200); overflow: hidden; }
+.progress-fill { display: block; height: 100%; background: var(--primary); transition: width .3s; }
+.timeline { list-style: none; margin: 0 0 24px; padding: 0; max-width: 920px; }
+.timeline-step { position: relative; display: flex; gap: 16px; padding-bottom: 20px; }
+/* الخط الرأسي يصل بين علامات الخطوات، ولا يظهر بعد الخطوة الأخيرة. */
+.timeline-step:not(:last-child)::before {
+  content: ""; position: absolute; top: 40px; bottom: 0; right: 19px; width: 2px; background: var(--neutral-300);
+}
+.timeline-marker {
+  flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; font-weight: 700;
+  background: #fff; border: 2px solid var(--primary); color: var(--primary); position: relative; z-index: 1;
+}
+.timeline-step.optional .timeline-marker { border-style: dashed; border-color: var(--text-muted); color: var(--text-secondary); }
+.timeline-step.done .timeline-marker { background: var(--primary); border: 2px solid var(--primary); color: #fff; }
+.timeline-body {
+  flex: 1; background: #fff; border-radius: 12px; padding: 16px; box-shadow: var(--card-shadow);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.timeline-step.done .timeline-body { background: var(--primary-25); }
+.timeline-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.timeline-head h3 { margin: 0; font-size: 17px; font-weight: 700; }
+.timeline-body .desc { margin: 0; color: var(--text-paragraph); font-size: 14px; }
+.timeline-service { font-size: 13px; color: var(--text-secondary); }
+.step-toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; cursor: pointer; }
+.step-toggle input { accent-color: var(--primary); width: 18px; height: 18px; }
 
 /* ---------- الخدمات الاستباقية ---------- */
 .proactive { margin-bottom: 24px; }

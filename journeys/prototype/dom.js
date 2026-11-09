@@ -6,6 +6,15 @@
   "use strict";
 
   const NAAMA_PLATFORM_URL = "https://naama.sa";
+  const JOURNEY_PAGE = "journey.html";
+
+  /** يفتح رحلة المستفيد على أول مسار للخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد. */
+  function journeyUrl(service, action) {
+    const params = new URLSearchParams({ q: service.name });
+    if (action) params.set("action", action.name);
+    const path = service.paths[0] ? `#/${service.paths[0]}` : "#/";
+    return `${JOURNEY_PAGE}?${params}${path}`;
+  }
 
   function createElement(tag, className, text) {
     const node = document.createElement(tag);
@@ -72,6 +81,6 @@
   }
 
   root.NaamaDom = {
-    NAAMA_PLATFORM_URL, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
+    NAAMA_PLATFORM_URL, JOURNEY_PAGE, journeyUrl, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
   };
 })(window);

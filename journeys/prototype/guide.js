@@ -8,7 +8,6 @@
 
   const PAGE_SIZE = 10;
   const MAX_PAGE_LINKS = 5;
-  const JOURNEY_PAGE = "journey.html";
   const URGENT_DAYS = 14;
   const DAY_MS = 24 * 60 * 60 * 1000;
   const RENEWAL_OPERATION = "تجديد";
@@ -26,7 +25,7 @@
     return;
   }
 
-  const { createElement, iconCircle, icon, normalizeArabic: normalize } = window.NaamaDom;
+  const { createElement, iconCircle, icon, normalizeArabic: normalize, journeyUrl, JOURNEY_PAGE } = window.NaamaDom;
   const services = data.services.filter((s) => s.published);
   const typesOf = (service) => new Set(service.paths.map((path) => path.split("/")[0]));
   const FILTER_GROUPS = [
@@ -44,6 +43,7 @@
     pagination: document.getElementById("pagination"),
     journeyTypes: document.getElementById("journey-types"),
     proactive: document.getElementById("proactive-list"),
+    lifeEvents: document.getElementById("life-events-list"),
   };
   const state = { query: "", page: 1, selected: Object.fromEntries(FILTER_GROUPS.map((g) => [g.key, new Set()])) };
   const textIndex = new Map(services.map((s) => [s.id, normalize([s.name, s.desc, s.category].join(" "))]));
@@ -131,12 +131,23 @@
 
   // ---------- البطاقات ----------
 
-  /** يفتح رحلة المستفيد على أول مسار للخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد. */
-  function journeyUrl(service, action) {
-    const params = new URLSearchParams({ q: service.name });
-    if (action) params.set("action", action.name);
-    const path = service.paths[0] ? `#/${service.paths[0]}` : "#/";
-    return `${JOURNEY_PAGE}?${params}${path}`;
+  // ---------- أحداث الحياة والأعمال ----------
+
+  function renderLifeEvents() {
+    if (!window.NaamaLifeEvents) {
+      console.warn("لم يُحمَّل life-events.js؛ سيُخفى قسم أحداث الحياة والأعمال.");
+      el.lifeEvents.closest("section").hidden = true;
+      return;
+    }
+    const { LIFE_EVENTS: events, stepsLabel } = window.NaamaLifeEvents;
+    el.lifeEvents.closest("section").hidden = !events.length;
+    el.lifeEvents.replaceChildren(...events.map((event) => {
+      const link = createElement("a", "life-event-chip");
+      link.href = `events.html#/${event.id}`;
+      link.append(icon(event.type), createElement("span", "title", event.title),
+        createElement("span", "count", stepsLabel(event.steps.length)));
+      return link;
+    }));
   }
 
   // ---------- الخدمات الاستباقية ----------
@@ -278,6 +289,7 @@
   el.sort.addEventListener("change", render);
   el.clear.addEventListener("click", clearFilters);
   renderJourneyTypes();
+  renderLifeEvents();
   renderProactive();
   renderFilters();
   render();
