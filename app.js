@@ -14,6 +14,7 @@
   }
 
   const { createElement, urlOrPlatform, iconCircle, normalizeArabic: normalize } = window.NaamaDom;
+  const { tokenize, prepareQuery, matchesPrepared, scorePrepared, trackQuery, renderPopularChips } = window.NaamaSearch;
   const GENERAL_PERSONA = "general";
   const GUIDE_PAGE = "index.html";
   const MIN_SEARCH_LENGTH = 2;
@@ -33,6 +34,7 @@
     stepHint: document.getElementById("step-hint"),
     search: document.getElementById("search-input"),
     searchSummary: document.getElementById("search-summary"),
+    suggestions: document.getElementById("search-suggestions"),
     back: document.getElementById("back-button"),
   };
 
@@ -75,12 +77,17 @@
     return pathLabelIndex.get(path);
   }
 
-  function searchTerms(query) {
-    return normalize(query).split(/\s+/).filter(Boolean);
+  const searchIndex = window.NaamaSearch.createIndex(publishedServices);
+
+  function applyQuery(query) {
+    el.search.value = query;
+    render();
   }
 
-  function containsAllTerms(text, terms) {
-    return terms.every((term) => text.includes(term));
+  function renderSuggestions(searching) {
+    if (!el.suggestions) return;
+    el.suggestions.hidden = searching;
+    if (!searching) renderPopularChips(el.suggestions, applyQuery);
   }
 
   /** هل المسار داخل نطاق الخطوة الحالية؟ النطاق الفارغ يعني كل الرحلات. */
@@ -107,6 +114,7 @@
 
   function serviceCard(service, { showPaths }) {
     const card = createElement("article", "service-card");
+    card.dataset.serviceId = service.id;
     card.append(iconCircle("service"), createElement("h3", null, service.name));
     if (service.desc) {
       const desc = createElement("p", "desc", service.desc);
@@ -142,12 +150,17 @@
 
   function openEligibility(service, action) {
     const questionIds = [...service.eligibility, ...(action ? action.eligibility : [])];
+    const typeKey = currentBeneficiaryType(service);
     window.NaamaEligibilityDialog.open({
       title: service.name,
       subtitle: action ? `${data.licenseStages[action.stage]} › ${action.operation}` : "",
       url: startUrl(service, action),
       fee: service.fee,
-      questions: window.NaamaEligibility.questionsFor(questionIds, currentBeneficiaryType(service), data.questions),
+      questions: window.NaamaEligibility.questionsFor(questionIds, typeKey, data.questions),
+      service,
+      action,
+      typeKey,
+      services: publishedServices,
     });
   }
 
@@ -213,6 +226,7 @@
     for (const [stage, stageActions] of groups) {
       const button = createElement("button", "stage-button", `${data.licenseStages[stage]} (${stageActions.length})`);
       button.type = "button";
+      button.dataset.stage = stage;
       button.setAttribute("aria-pressed", "false");
       button.addEventListener("click", () => {
         selectOnly(stageButtons, button);
@@ -339,31 +353,46 @@
 
   /**
    * تطابق الخدمة إذا وُجدت كل كلمات البحث في نصها (الاسم، الوصف، الإجراءات)
-   * مضافًا إليه أسماء تصنيفات أحد مساراتها داخل النطاق. هكذا يعيد البحث عن
-   * "مزارع آبار" خدمات الآبار الموجودة في رحلة المزارع فقط.
+   * مضافًا إليه أسماء تصنيفات أحد مساراتها داخل النطاق، مع المرادفات والأخطاء القريبة.
    */
-  function matchingPaths(service, scope, terms) {
-    const serviceText = serviceTextIndex.get(service.id);
-    return service.paths.filter(
-      (path) => isInScope(path, scope) && containsAllTerms(`${serviceText} ${pathLabelText(path)}`, terms)
+  function matchingPaths(service, scope, prepared) {
+    const entry = searchIndex.byId.get(service.id);
+    const base = entry ? entry.all : serviceTextIndex.get(service.id);
+    return service.paths.filter((path) =>
+      isInScope(path, scope) && matchesPrepared(`${base} ${pathLabelText(path)}`, prepared)
     );
+  }
+
+  function emptySearchResults(query) {
+    const box = emptyState(`لم نجد نتائج تطابق «${query}». جرّب كلمة أخرى أو اختر من الأكثر بحثًا.`);
+    const hints = createElement("div", "search-suggestions");
+    renderPopularChips(hints, applyQuery);
+    box.append(hints);
+    return box;
   }
 
   function renderSearchResults(route, services, query) {
     const scope = route.join("/");
-    const terms = searchTerms(query);
     const counts = countByPrefix(services);
 
+    const prepared = prepareQuery(query, searchIndex.vocabulary);
     const categories = categoriesInScope(route).filter(
-      (c) => counts.get(c.path) && containsAllTerms(normalize(c.title), terms)
+      (c) => counts.get(c.path) && matchesPrepared(c.title, prepared)
     );
     const serviceMatches = services
-      .map((service) => ({ service, paths: matchingPaths(service, scope, terms) }))
-      .filter((match) => match.paths.length);
+      .map((service) => {
+        const paths = matchingPaths(service, scope, prepared);
+        const entry = searchIndex.byId.get(service.id);
+        const score = paths.length && entry ? scorePrepared(entry, prepared) : 0;
+        return { service, paths, score };
+      })
+      .filter((match) => match.paths.length)
+      .sort((a, b) => b.score - a.score || a.service.name.localeCompare(b.service.name, "ar"));
 
     el.searchSummary.textContent = `${categories.length} تصنيف و ${serviceMatches.length} خدمة مطابقة`;
+    trackQuery(query, categories.length + serviceMatches.length);
     if (!categories.length && !serviceMatches.length) {
-      return emptyState("لم يتم العثور على نتائج مطابقة. جرّب كلمات أخرى.");
+      return emptySearchResults(query);
     }
 
     const wrapper = createElement("div");
@@ -437,7 +466,28 @@
     if (route[1]) crumbs.push({ label: type.personas[route[1]].label, href: `#/${route[0]}/${route[1]}` });
     if (route[2]) crumbs.push({ label: type.personas[route[1]].groups[route[2]], href: `#/${route.join("/")}` });
     renderBreadcrumb(crumbs);
-    el.content.replaceChildren(query.length >= MIN_SEARCH_LENGTH ? renderSearchResults(route, services, query) : view);
+    const searching = query.length >= MIN_SEARCH_LENGTH && tokenize(query).length > 0;
+    renderSuggestions(searching);
+    el.content.replaceChildren(searching ? renderSearchResults(route, services, query) : view);
+  }
+
+  /** يختار نوع الترخيص ثم الإجراء نيابة عن المستفيد، كما لو ضغط عليهما بنفسه. */
+  function preselectAction(actionName) {
+    const servicesById = new Map(data.services.map((s) => [s.id, s]));
+    for (const card of el.content.querySelectorAll(".service-card")) {
+      const service = servicesById.get(card.dataset.serviceId);
+      const action = service && service.actions.find((a) => a.name === actionName);
+      if (!action) continue;
+      const stageButton = [...card.querySelectorAll(".stage-button")].find((b) => b.dataset.stage === action.stage);
+      if (stageButton) stageButton.click();
+      const chip = [...card.querySelectorAll(".action-chip")].find((c) => c.title === actionName);
+      if (chip) {
+        chip.click();
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
+    console.warn(`لم يُعثر على الإجراء المطلوب في نتائج الرحلة: ${actionName}`);
   }
 
   function goBack() {
@@ -452,7 +502,9 @@
   });
   el.search.addEventListener("input", render);
   el.back.addEventListener("click", goBack);
-  // يسمح لصفحة الدليل بفتح الرحلة على خدمة محددة: journey.html?q=اسم الخدمة#/المسار
-  el.search.value = new URLSearchParams(location.search).get("q") || "";
+  // يسمح لصفحة الدليل بفتح الرحلة على خدمة وإجراء محددين: journey.html?q=اسم الخدمة&action=اسم الإجراء#/المسار
+  const params = new URLSearchParams(location.search);
+  el.search.value = params.get("q") || "";
   render();
+  if (params.get("action")) preselectAction(params.get("action"));
 })();

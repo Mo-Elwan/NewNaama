@@ -6,6 +6,18 @@
   "use strict";
 
   const NAAMA_PLATFORM_URL = "https://naama.sa";
+  const JOURNEY_PAGE = "journey.html";
+
+  /**
+   * يفتح رحلة المستفيد على مسار الخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد.
+   * typeKey يفضّل مسار نوع المستفيد نفسه، لأن الخدمة قد تظهر لأكثر من نوع وتختلف شروطها بينها.
+   */
+  function journeyUrl(service, action, typeKey) {
+    const params = new URLSearchParams({ q: service.name });
+    if (action) params.set("action", action.name);
+    const path = service.paths.find((p) => typeKey && p.startsWith(`${typeKey}/`)) || service.paths[0];
+    return `${JOURNEY_PAGE}?${params}${path ? `#/${path}` : "#/"}`;
+  }
 
   function createElement(tag, className, text) {
     const node = document.createElement(tag);
@@ -50,6 +62,7 @@
     service: "M7 3h7l5 5v13H7z M14 3v5h5 M10 13h6 M10 17h4",
     category: "M12 21v-9 M12 12C12 7 8 5 4 5c0 5 3 7 8 7z M12 14c0-4 3-6 8-6 0 4-3 6-8 6z",
     journey: "M5 19a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M19 9a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M7 17h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6",
+    bell: "M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 20a2 2 0 0 0 4 0",
   };
 
   function icon(iconKey, className) {
@@ -71,6 +84,6 @@
   }
 
   root.NaamaDom = {
-    NAAMA_PLATFORM_URL, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
+    NAAMA_PLATFORM_URL, JOURNEY_PAGE, journeyUrl, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
   };
 })(window);

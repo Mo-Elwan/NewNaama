@@ -40,12 +40,31 @@
       <nav id="journey-types" class="journey-types" aria-label="ابدأ الرحلة حسب نوع المستفيد"></nav>
     </section>
 
+    <section class="life-events" aria-labelledby="life-events-title">
+      <div class="proactive-head">
+        <h2 id="life-events-title">ماذا تريد أن تنجز؟</h2>
+        <span class="hint">اختر نوعك أولًا، ثم هدفك، وسنرتب لك الخدمات التي تحتاجها خطوة بخطوة.</span>
+        <a class="link-button see-all" href="events.html">كل الأحداث ←</a>
+      </div>
+      <div id="life-event-types" class="type-tabs" role="group" aria-label="نوع المستفيد"></div>
+      <nav id="life-events-list" class="life-events-list" aria-label="أحداث الحياة والأعمال"></nav>
+    </section>
+
+    <section class="proactive" aria-labelledby="proactive-title">
+      <div class="proactive-head">
+        <h2 id="proactive-title">خدماتك الاستباقية</h2>
+        <span class="hint">نذكّرك بالخدمات المستحقة قبل موعدها. (بيانات توضيحية لمستفيد افتراضي، تظهر بياناته الفعلية بعد تسجيل الدخول)</span>
+      </div>
+      <div id="proactive-list" class="proactive-list"></div>
+    </section>
+
     <div class="search-holder">
       <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
       </svg>
-      <input id="guide-search" type="search" autocomplete="off" placeholder="ابحث هنا ..." aria-label="ابحث في الخدمات">
+      <input id="guide-search" type="search" autocomplete="off" placeholder="ابحث باسم الخدمة أو بكلمات دارجة مثل رخصة بئر ..." aria-label="ابحث في الخدمات">
     </div>
+    <div id="search-suggestions" class="search-suggestions" aria-label="الأكثر بحثًا"></div>
 
     <div class="guide-layout">
       <aside class="filters" aria-labelledby="filters-title">
@@ -81,6 +100,8 @@
   <script src="layout.js"></script>
   <script src="dom.js"></script>
   <script src="data.js"></script>
+  <script src="life-events.js"></script>
+  <script src="search.js"></script>
   <script src="guide.js"></script>
 </body>
 </html>
