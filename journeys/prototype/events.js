@@ -13,7 +13,7 @@
     return;
   }
 
-  const { createElement, iconCircle, journeyUrl, safeUrl } = window.NaamaDom;
+  const { createElement, iconCircle, journeyUrl, serviceUrl, safeUrl } = window.NaamaDom;
   const { LIFE_EVENTS, resolveLifeEvent, eventsForType, progress, feeTotals, stepsLabel, eventsLabel } = window.NaamaLifeEvents;
   const { describeFee, formatAmount } = window.NaamaEligibility;
   const STORAGE_PREFIX = "naama.lifeEvent.";
@@ -184,6 +184,8 @@
     const actions = createElement("div", "service-buttons");
     const start = createElement("a", "btn btn-primary", "ابدأ هذه الخطوة ←");
     start.href = journeyUrl(service, action, event.type);
+    const details = createElement("a", "btn btn-outline", "تفاصيل الخدمة");
+    details.href = serviceUrl(service, action);
     const toggle = createElement("label", "step-toggle");
     const checkbox = createElement("input");
     checkbox.type = "checkbox";
@@ -193,7 +195,7 @@
       render();
     });
     toggle.append(checkbox, createElement("span", null, "أنجزت هذه الخطوة"));
-    actions.append(start, toggle);
+    actions.append(start, details, toggle);
     body.append(actions);
     item.append(body);
     return item;

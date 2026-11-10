@@ -13,7 +13,7 @@
     return;
   }
 
-  const { createElement, urlOrPlatform, iconCircle, normalizeArabic: normalize } = window.NaamaDom;
+  const { createElement, urlOrPlatform, iconCircle, normalizeArabic: normalize, serviceUrl } = window.NaamaDom;
   const { tokenize, prepareQuery, matchesPrepared, scorePrepared, trackQuery, renderPopularChips } = window.NaamaSearch;
   const GENERAL_PERSONA = "general";
   const GUIDE_PAGE = "index.html";
@@ -97,8 +97,6 @@
 
   // ---------- عناصر الواجهة ----------
 
-  const { externalLink } = window.NaamaDom;
-
   function choiceCard({ title, count, href, isGeneral, crumb, icon }) {
     const card = createElement("a", "choice-card" + (isGeneral ? " general" : ""));
     card.href = href;
@@ -164,14 +162,15 @@
     });
   }
 
-  /** زرّا "ابدأ الخدمة" و"التحقق من الأهلية والرسوم" لخدمة أو لإجراء فرعي منها. */
+  /** زرا «تفاصيل الخدمة» و«التحقق من الأهلية والرسوم» لخدمة أو لإجراء فرعي منها. */
   function serviceButtons(service, action) {
     const buttons = createElement("div", "service-buttons");
-    buttons.append(externalLink("btn btn-primary", "ابدأ الخدمة ←", startUrl(service, action)));
+    const details = createElement("a", "btn btn-primary", "تفاصيل الخدمة");
+    details.href = serviceUrl(service, action);
     const check = createElement("button", "btn btn-outline", "التحقق من الأهلية والرسوم");
     check.type = "button";
     check.addEventListener("click", () => openEligibility(service, action));
-    buttons.append(check);
+    buttons.append(details, check);
     return buttons;
   }
 
