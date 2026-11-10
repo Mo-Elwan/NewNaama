@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نما | دليل الخدمات الإلكترونية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="guide" class="guide-page">
+  <header id="site-header"></header>
+
+  <section class="page-header">
+    <div class="container">
+      <nav class="breadcrumb" aria-label="مسار التنقل">
+        <a href="https://naama.sa" target="_blank" rel="noopener noreferrer">الرئيسية</a>
+        <span class="sep">›</span>
+        <a href="index.html" aria-current="page">دليل الخدمات الإلكترونية</a>
+      </nav>
+      <h1>دليل الخدمات الإلكترونية</h1>
+    </div>
+  </section>
+
+  <main class="container main-content">
+    <section class="journey-banner" aria-labelledby="journey-banner-title">
+      <div class="journey-banner-text">
+        <span class="journey-banner-tag">جديد</span>
+        <h2 id="journey-banner-title">رحلة المستفيد</h2>
+        <p>لا تعرف اسم الخدمة؟ اختر صفتك ونشاطك واحتياجك، وسنوصلك للخدمة المناسبة في 4 خطوات.</p>
+        <ol class="journey-steps">
+          <li><span>1</span>من أنت؟</li>
+          <li><span>2</span>فئتك</li>
+          <li><span>3</span>احتياجك</li>
+          <li><span>4</span>الخدمة</li>
+        </ol>
+        <a class="btn btn-white" href="journey.html">ابدأ رحلة المستفيد ←</a>
+      </div>
+      <nav id="journey-types" class="journey-types" aria-label="ابدأ الرحلة حسب نوع المستفيد"></nav>
+    </section>
+
+    <section class="life-events" aria-labelledby="life-events-title">
+      <div class="proactive-head">
+        <h2 id="life-events-title">ماذا تريد أن تنجز؟</h2>
+        <span class="hint">اختر نوعك أولًا، ثم هدفك، وسنرتب لك الخدمات التي تحتاجها خطوة بخطوة.</span>
+        <a class="link-button see-all" href="events.html">كل الأحداث ←</a>
+      </div>
+      <div id="life-event-types" class="type-tabs" role="group" aria-label="نوع المستفيد"></div>
+      <nav id="life-events-list" class="life-events-list" aria-label="أحداث الحياة والأعمال"></nav>
+    </section>
+
+    <section class="proactive" aria-labelledby="proactive-title">
+      <div class="proactive-head">
+        <h2 id="proactive-title">خدماتك الاستباقية</h2>
+        <span class="hint">نذكّرك بالخدمات المستحقة قبل موعدها. (بيانات توضيحية لمستفيد افتراضي، تظهر بياناته الفعلية بعد تسجيل الدخول)</span>
+      </div>
+      <div id="proactive-list" class="proactive-list"></div>
+    </section>
+
+    <div class="search-holder">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input id="guide-search" type="search" autocomplete="off" placeholder="ابحث باسم الخدمة أو بكلمات دارجة مثل رخصة بئر ..." aria-label="ابحث في الخدمات">
+    </div>
+    <div id="search-suggestions" class="search-suggestions" aria-label="الأكثر بحثًا"></div>
+
+    <div class="guide-layout">
+      <aside class="filters" aria-labelledby="filters-title">
+        <div class="filters-head">
+          <h2 id="filters-title">تصفية البحث</h2>
+          <button id="clear-filters" class="link-button" type="button" hidden>مسح التصفية</button>
+        </div>
+        <div id="filter-groups"></div>
+      </aside>
+
+      <section class="guide-results" aria-live="polite">
+        <div class="results-head">
+          <div>
+            <h2>جميع الخدمات</h2>
+            <div id="results-count" class="service-meta"></div>
+          </div>
+          <label class="sort-control">
+            <span>ترتيب الخدمات</span>
+            <select id="sort-select" class="form-control">
+              <option value="az">ترتيب أبجدي تصاعدي</option>
+              <option value="za">ترتيب أبجدي تنازلي</option>
+            </select>
+          </label>
+        </div>
+        <div id="guide-list" class="guide-list"></div>
+        <nav id="pagination" class="pagination" aria-label="ترقيم الصفحات"></nav>
+      </section>
+    </div>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <script src="layout.js"></script>
+  <script src="dom.js"></script>
+  <script src="data.js"></script>
+  <script src="life-events.js"></script>
+  <script src="search.js"></script>
+  <script src="guide.js"></script>
+</body>
+</html>

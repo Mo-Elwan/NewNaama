@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نما | رحلة المستفيد</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body data-page="journey">
+  <header id="site-header"></header>
+
+  <section class="page-header">
+    <div class="container">
+      <nav id="breadcrumb" class="breadcrumb" aria-label="مسار التنقل"></nav>
+      <p id="step-label" class="step-label"></p>
+      <h1 id="step-title"></h1>
+      <p id="step-hint" class="step-hint"></p>
+    </div>
+  </section>
+
+  <main class="container main-content">
+    <div class="search-holder">
+      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input id="search-input" type="search" autocomplete="off" aria-label="ابحث باسم الخدمة أو التصنيف">
+    </div>
+    <div id="search-suggestions" class="search-suggestions" aria-label="الأكثر بحثًا"></div>
+    <p id="search-summary" class="search-summary"></p>
+    <div class="toolbar">
+      <button id="back-button" class="btn btn-light" type="button">رجوع</button>
+    </div>
+    <section id="content" aria-live="polite"></section>
+  </main>
+
+  <footer id="site-footer" class="site-footer"></footer>
+
+  <dialog id="eligibility-dialog" class="modal" aria-label="التحقق من الأهلية والرسوم"></dialog>
+
+  <script src="layout.js"></script>
+  <script src="dom.js"></script>
+  <script src="eligibility.js"></script>
+  <script src="eligibility-dialog.js"></script>
+  <script src="data.js"></script>
+  <script src="search.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
