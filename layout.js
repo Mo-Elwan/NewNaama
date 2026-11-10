@@ -1,6 +1,6 @@
 /**
  * الترويسة والتذييل المشتركان بين صفحات النموذج، بنفس تصميم منصة نما.
- * الصفحة تحدد العنصر النشط في القائمة عبر <body data-page="guide|journey">.
+ * الصفحة تحدد العنصر النشط في القائمة عبر <body data-page="guide|journey|events|brief">.
  * القوالب هنا نصوص ثابتة لا تحتوي على أي بيانات من ملف الخدمات، لذا لا خطر من innerHTML.
  */
 (function () {
@@ -49,6 +49,7 @@
       </div>
       <div class="top-bar">
         <div class="container top-bar-inner">
+          <a href="brief.html"${activePage === "brief" ? ' aria-current="page"' : ""}>الملخص التنفيذي</a>
           <a href="${NAAMA}" ${EXTERNAL}>English</a>
           <a href="${NAAMA}" ${EXTERNAL}>تسجيل الدخول</a>
         </div>
@@ -78,7 +79,7 @@
     const featuredColumns = Object.entries(FEATURED).map(([title, names]) => `
       <div class="footer-col">
         <h2>${title}</h2>
-        ${linkList(names.map((name) => [name, `journey.html?q=${encodeURIComponent(name)}`, false]))}
+        ${linkList(names.map((name) => [name, `service.html?q=${encodeURIComponent(name)}`, false]))}
       </div>`).join("");
     return `
       <section class="page-feedback container" aria-label="تقييم الصفحة">
@@ -95,7 +96,7 @@
         <div class="container footer-grid">
           <div class="footer-col">
             <h2>روابط تهمك</h2>
-            ${linkList(USEFUL_LINKS.map(([label, href]) => [label, href, true]))}
+            ${linkList([["الملخص التنفيذي", "brief.html", false], ...USEFUL_LINKS.map(([label, href]) => [label, href, true])])}
           </div>
           ${featuredColumns}
           <div class="footer-col">

@@ -7,6 +7,7 @@
 
   const NAAMA_PLATFORM_URL = "https://naama.sa";
   const JOURNEY_PAGE = "journey.html";
+  const SERVICE_PAGE = "service.html";
 
   /**
    * يفتح رحلة المستفيد على مسار الخدمة مع البحث باسمها لتظهر وحدها، واختيار الإجراء إن وُجد.
@@ -17,6 +18,14 @@
     if (action) params.set("action", action.name);
     const path = service.paths.find((p) => typeKey && p.startsWith(`${typeKey}/`)) || service.paths[0];
     return `${JOURNEY_PAGE}?${params}${path ? `#/${path}` : "#/"}`;
+  }
+
+  /** صفحة تفاصيل الخدمة (الشروط والمستندات والخدمات المرتبطة). */
+  function serviceUrl(service, action) {
+    if (!service || !service.id) throw new Error("serviceUrl يتطلب خدمة لها معرّف");
+    const params = new URLSearchParams({ id: service.id });
+    if (action && action.name) params.set("action", action.name);
+    return `${SERVICE_PAGE}?${params}`;
   }
 
   function createElement(tag, className, text) {
@@ -63,6 +72,12 @@
     category: "M12 21v-9 M12 12C12 7 8 5 4 5c0 5 3 7 8 7z M12 14c0-4 3-6 8-6 0 4-3 6-8 6z",
     journey: "M5 19a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M19 9a2 2 0 1 0 0-4a2 2 0 0 0 0 4z M7 17h6a3 3 0 0 0 0-6h-2a3 3 0 0 1 0-6h6",
     bell: "M6 16V11a6 6 0 0 1 12 0v5l2 2H4z M10 20a2 2 0 0 0 4 0",
+    clock: "M12 8v5l3 2 M12 21a9 9 0 1 1 0-18a9 9 0 0 1 0 18z",
+    globe: "M12 21a9 9 0 1 1 0-18a9 9 0 0 1 0 18z M3 12h18 M12 3c3 3.5 3 14.5 0 18 M12 3C9 6.5 9 17.5 12 21",
+    coin: "M12 3c4.4 0 8 1.8 8 4s-3.6 4-8 4-8-1.8-8-4 3.6-4 8-4z M4 7v5c0 2.2 3.6 4 8 4s8-1.8 8-4V7 M4 12v5c0 2.2 3.6 4 8 4s8-1.8 8-4v-5",
+    bolt: "M13 2L4 14h8l-1 8 9-12h-8z",
+    check: "M20 6L9 17l-5-5",
+    link: "M10 13a5 5 0 0 0 7.07.07l2.12-2.12a5 5 0 0 0-7.07-7.07L11 5 M14 11a5 5 0 0 0-7.07-.07L4.8 13.05a5 5 0 0 0 7.07 7.07L13 19",
   };
 
   function icon(iconKey, className) {
@@ -84,6 +99,6 @@
   }
 
   root.NaamaDom = {
-    NAAMA_PLATFORM_URL, JOURNEY_PAGE, journeyUrl, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
+    NAAMA_PLATFORM_URL, JOURNEY_PAGE, SERVICE_PAGE, journeyUrl, serviceUrl, createElement, safeUrl, urlOrPlatform, externalLink, normalizeArabic, icon, iconCircle,
   };
 })(window);

@@ -1,7 +1,7 @@
 /**
  * صفحة دليل الخدمات الإلكترونية (مطابقة لـ naama.sa/services) مع مدخل بارز لرحلة المستفيد.
- * بطاقات الخدمات تفتح رحلة المستفيد على الخدمة نفسها، حيث زرّا البدء والتحقق من الأهلية،
- * حتى يبقى منطق الأهلية في مكان واحد.
+ * بطاقات الخدمات تفتح صفحة التفاصيل (الشروط والمستندات والخدمات المرتبطة)،
+ * ومنها ينتقل المستفيد إلى التقديم أو التحقق من الأهلية.
  */
 (function () {
   "use strict";
@@ -25,7 +25,7 @@
     return;
   }
 
-  const { createElement, iconCircle, icon, journeyUrl, JOURNEY_PAGE } = window.NaamaDom;
+  const { createElement, iconCircle, icon, journeyUrl, serviceUrl, JOURNEY_PAGE } = window.NaamaDom;
   const { tokenize, trackQuery, renderPopularChips } = window.NaamaSearch;
   const services = data.services.filter((s) => s.published);
   const searchIndex = window.NaamaSearch.createIndex(services);
@@ -225,7 +225,7 @@
       createElement("span", "proactive-meta", `رقم الرخصة: ${sample.licenseNo}`),
     );
     const button = createElement("a", "btn btn-primary", "جدّد الآن ←");
-    button.href = journeyUrl(service, action);
+    button.href = serviceUrl(service, action);
     card.append(button);
     return card;
   }
@@ -260,8 +260,8 @@
     if (service.actions.length) meta.append(createElement("span", "badge badge-success", `${service.actions.length} خدمة فرعية`));
     card.append(meta);
 
-    const button = createElement("a", "btn btn-primary guide-card-button", service.actions.length ? "اختر الخدمة" : "تفاصيل الخدمة ←");
-    button.href = journeyUrl(service);
+    const button = createElement("a", "btn btn-primary guide-card-button", "تفاصيل الخدمة ←");
+    button.href = serviceUrl(service);
     card.append(button);
     return card;
   }

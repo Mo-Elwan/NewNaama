@@ -1,0 +1,117 @@
+/* صفحة تفاصيل الخدمة — مطابقة لبطاقة الخدمة في naama.sa */
+.service-page { background: #fff; }
+
+.svc-hero { background: var(--primary-50); padding: 28px 0 32px; }
+.svc-hero-grid {
+  display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start;
+}
+.svc-hero h1 { margin: 0 0 12px; font-size: 32px; font-weight: 700; color: var(--text-default); line-height: 1.35; }
+.svc-tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+.svc-tags span {
+  background: #fff; border: 1px solid var(--neutral-200); color: var(--text-paragraph);
+  border-radius: 6px; padding: 4px 10px; font-size: 13px;
+}
+.svc-hero .svc-desc { margin: 0 0 14px; color: var(--text-paragraph); font-size: 15px; line-height: 1.8; max-width: 46rem; }
+.svc-related-count {
+  display: inline-flex; align-items: center; gap: 6px; color: var(--primary); font-weight: 600;
+  font-size: 14px; text-decoration: none;
+}
+.svc-related-count:hover { text-decoration: underline; }
+.svc-related-count svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.svc-hero-side { display: flex; flex-direction: column; gap: 12px; }
+.svc-hero-side .btn { justify-content: center; width: 100%; padding: 10px 16px; }
+.svc-facts {
+  background: #fff; border-radius: 12px; box-shadow: var(--card-shadow); padding: 8px 4px;
+}
+.svc-facts li {
+  display: grid; grid-template-columns: 40px 1fr; grid-template-rows: auto auto;
+  gap: 2px 10px; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100);
+}
+.svc-facts li:last-child { border-bottom: none; }
+.svc-facts .svc-fact-icon {
+  grid-column: 1; grid-row: 1 / span 2; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--primary-50); color: var(--primary-icon); display: grid; place-items: center;
+}
+.svc-facts strong { grid-column: 2; grid-row: 1; }
+.svc-facts span { grid-column: 2; grid-row: 2; }
+.svc-facts .svc-fact-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.svc-facts strong { font-size: 14px; color: var(--text-default); font-weight: 600; }
+.svc-facts span { font-size: 12px; color: var(--text-secondary); }
+
+.svc-layout {
+  display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 32px;
+  padding: 28px 0 56px; align-items: start;
+}
+.svc-tabs {
+  display: flex; gap: 8px; border-bottom: 1px solid var(--neutral-200); margin: 0 0 20px; padding: 0;
+  list-style: none; overflow-x: auto;
+}
+.svc-tabs button {
+  appearance: none; border: 0; background: none; padding: 12px 8px; margin-bottom: -1px;
+  font: inherit; font-size: 15px; font-weight: 500; color: var(--text-secondary); cursor: pointer;
+  border-bottom: 2px solid transparent; white-space: nowrap;
+}
+.svc-tabs button:hover { color: var(--primary); }
+.svc-tabs button[aria-selected="true"] {
+  color: var(--primary-dark); font-weight: 700; border-bottom-color: var(--primary);
+}
+
+.svc-panel { display: grid; gap: 12px; }
+.svc-panel[hidden] { display: none; }
+.svc-panel > p { margin: 0; color: var(--text-paragraph); line-height: 1.8; }
+.svc-note { font-size: 13px; color: var(--text-secondary); }
+
+.svc-term, .svc-doc {
+  display: flex; align-items: flex-start; gap: 12px; margin: 0;
+  background: #fff; border: 1px solid var(--neutral-200); border-radius: 8px; padding: 16px 18px;
+  color: var(--text-paragraph); line-height: 1.7;
+}
+.svc-check {
+  width: 22px; height: 22px; flex-shrink: 0; margin-top: 2px; border-radius: 50%;
+  background: var(--success-50); color: var(--primary); display: grid; place-items: center;
+}
+.svc-check svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+.svc-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.svc-steps li {
+  display: grid; grid-template-columns: 32px 1fr; gap: 12px; align-items: start;
+  background: #fff; border: 1px solid var(--neutral-200); border-radius: 8px; padding: 14px 16px;
+}
+.svc-steps b {
+  width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: #fff;
+  display: grid; place-items: center; font-size: 13px;
+}
+.svc-steps strong { display: block; font-size: 15px; color: var(--text-default); }
+.svc-steps span { font-size: 13px; color: var(--text-secondary); }
+
+.svc-related { padding: 8px 0 48px; }
+.svc-related h2 { margin: 0 0 14px; font-size: 20px; font-weight: 700; color: var(--primary-dark); }
+.svc-related-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.svc-related-list a {
+  display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  background: #fff; border: 1px solid var(--neutral-200); border-radius: 10px; padding: 14px 16px;
+  text-decoration: none; color: inherit;
+}
+.svc-related-list a:hover { border-color: var(--primary); background: var(--primary-25); }
+.svc-related-list strong { display: block; font-size: 15px; color: var(--text-default); }
+.svc-related-list span { font-size: 13px; color: var(--text-secondary); }
+.svc-related-list em { font-style: normal; color: var(--primary); font-weight: 700; font-size: 13px; white-space: nowrap; }
+
+.svc-aside { display: flex; flex-direction: column; gap: 24px; font-size: 14px; }
+.svc-aside h2 { margin: 0 0 10px; font-size: 16px; font-weight: 700; color: var(--text-default); }
+.svc-aside ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.svc-aside a { color: var(--primary); text-decoration: none; }
+.svc-aside a:hover { text-decoration: underline; }
+.svc-channel { color: var(--text-paragraph); }
+.svc-contact-item { color: var(--text-paragraph); }
+
+.svc-missing { padding: 64px 0; text-align: center; }
+.svc-missing h1 { margin: 0 0 8px; font-size: 24px; }
+.svc-missing p { color: var(--text-secondary); }
+
+.svc-check-row { margin-top: 8px; justify-self: start; }
+
+@media (max-width: 1000px) {
+  .svc-hero-grid, .svc-layout { grid-template-columns: 1fr; }
+}
