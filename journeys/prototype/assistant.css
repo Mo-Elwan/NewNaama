@@ -1,0 +1,168 @@
+/* مساعد نما الذهبي — مسار موجَّه، لا قائمة بحث */
+:root {
+  --gold: #d4a017;
+  --gold-deep: #7a5410;
+  --gold-mid: #c4921a;
+  --gold-soft: #fff8e8;
+  --gold-line: #ead7a0;
+}
+
+@keyframes naama-assist-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 160, 23, .5), 0 0 0 4px rgba(212, 160, 23, .28); }
+  70% { box-shadow: 0 0 0 16px rgba(212, 160, 23, 0), 0 0 0 4px rgba(212, 160, 23, .28); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 160, 23, 0), 0 0 0 4px rgba(212, 160, 23, .18); }
+}
+
+.naama-assist-fab {
+  position: fixed; left: 20px; bottom: 20px; z-index: 80;
+  width: 76px; height: 76px; padding: 0; border: 0; border-radius: 50%;
+  cursor: pointer; background: transparent;
+  filter: drop-shadow(0 12px 24px rgba(90, 58, 8, .42));
+  transition: transform .2s ease;
+}
+.naama-assist-fab:hover, .naama-assist-fab:focus-visible {
+  transform: translateY(-3px) scale(1.04);
+  outline: none;
+}
+.naama-assist-orb {
+  position: relative; display: block; width: 76px; height: 76px; border-radius: 50%;
+  overflow: hidden; border: 3px solid #f6e7b2;
+  box-shadow: 0 0 0 4px rgba(212, 160, 23, .28);
+  background: radial-gradient(circle at 35% 30%, #ffe9a3, #c4921a 55%, #5d4010);
+  animation: naama-assist-pulse 2.6s ease-out infinite;
+}
+.naama-assist-fab[aria-expanded="true"] .naama-assist-orb { animation: none; }
+.naama-assist-orb img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center;
+  transform: scale(1.22); display: block;
+}
+.naama-assist-spark {
+  position: absolute; top: 8px; left: 10px; width: 10px; height: 10px;
+  background: radial-gradient(circle, #fff 0 35%, transparent 70%);
+  pointer-events: none;
+}
+.naama-assist-fab-label {
+  position: absolute; left: 88px; bottom: 24px; white-space: nowrap;
+  background: var(--gold-deep); color: #fff8e8; font-size: 13px; font-weight: 700;
+  padding: 7px 12px; border-radius: 999px; box-shadow: 0 6px 16px rgba(0, 0, 0, .12);
+  pointer-events: none;
+}
+.naama-assist-fab[aria-expanded="true"] .naama-assist-fab-label { display: none; }
+
+.naama-assist-panel {
+  position: fixed; left: 20px; bottom: 112px; z-index: 81;
+  width: min(400px, calc(100vw - 28px)); height: min(560px, calc(100vh - 140px));
+  background: #fff; border-radius: 22px; overflow: hidden;
+  display: flex; flex-direction: column;
+  border: 1px solid var(--gold-line);
+  box-shadow: 0 22px 50px rgba(31, 42, 55, .22);
+}
+.naama-assist-panel[hidden] { display: none; }
+
+.naama-assist-head {
+  display: flex; align-items: center; gap: 10px; padding: 12px 14px;
+  background: linear-gradient(135deg, #5d4010, #c4921a 62%, #e0b53a);
+  color: #fff;
+}
+.naama-assist-head img {
+  width: 44px; height: 44px; border-radius: 50%; object-fit: cover;
+  object-position: center; transform: scale(1.18);
+  border: 2px solid rgba(255, 255, 255, .55); background: #f6e7b2;
+}
+.naama-assist-head h2 { margin: 0; font-size: 16px; font-weight: 700; }
+.naama-assist-head p { margin: 2px 0 0; font-size: 12px; opacity: .92; }
+.naama-assist-close {
+  margin-inline-start: auto; border: 0; background: transparent; color: #fff;
+  font-size: 26px; line-height: 1; cursor: pointer; width: 36px; height: 36px; border-radius: 10px;
+}
+.naama-assist-close:hover { background: rgba(255, 255, 255, .14); }
+
+.naama-assist-thread {
+  flex: 1; overflow-y: auto; padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(243, 224, 166, .55), transparent 42%),
+    var(--gold-soft);
+}
+.naama-assist-msg {
+  max-width: 94%; padding: 10px 12px; border-radius: 14px; font-size: 14px; line-height: 1.7;
+}
+.naama-assist-msg.bot { align-self: flex-start; background: #fff; border: 1px solid var(--gold-line); color: var(--text-default); }
+.naama-assist-msg.user { align-self: flex-end; background: var(--gold-deep); color: #fff8e8; }
+.naama-assist-msg p { margin: 0 0 8px; }
+.naama-assist-msg p:last-child { margin-bottom: 0; }
+
+.naama-assist-badge {
+  display: inline-block; margin-bottom: 8px; padding: 3px 9px;
+  border-radius: 999px; background: #f4ead0; color: var(--gold-deep);
+  font-size: 11px; font-weight: 700; letter-spacing: 0;
+}
+.naama-assist-badge.ask { background: #eef4ea; color: #3d5a2a; }
+
+.naama-assist-primary {
+  display: block; margin-top: 8px; text-decoration: none; color: #fff;
+  background: linear-gradient(135deg, #8a6414, #d4a017); border-radius: 12px; padding: 10px 12px;
+}
+.naama-assist-primary strong { display: block; font-size: 14px; }
+.naama-assist-primary small { display: block; margin-top: 2px; opacity: .9; font-size: 12px; }
+
+.naama-assist-steps {
+  list-style: none; margin: 12px 0 0; padding: 0; padding-inline-start: 2px;
+  display: grid; gap: 0; counter-reset: path;
+  border-inline-start: 2px solid var(--gold-line);
+}
+.naama-assist-steps li {
+  position: relative; padding: 0 0 10px; padding-inline-start: 14px;
+}
+.naama-assist-steps li:last-child { padding-bottom: 0; }
+.naama-assist-steps li::before {
+  counter-increment: path;
+  content: counter(path);
+  position: absolute; inset-inline-start: -13px; top: 10px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: linear-gradient(180deg, #e0b53a, #8a6414); color: #fff;
+  font-size: 11px; font-weight: 700; display: grid; place-items: center;
+  box-shadow: 0 0 0 3px #fff;
+}
+.naama-assist-steps a {
+  display: block; text-decoration: none; color: inherit;
+  background: var(--gold-soft); border: 1px solid var(--gold-line); border-radius: 12px; padding: 9px 11px;
+}
+.naama-assist-steps a:hover { border-color: var(--gold-mid); background: #fff; }
+.naama-assist-steps strong { display: block; color: var(--gold-deep); font-size: 13px; }
+.naama-assist-steps span { display: block; margin-top: 2px; color: var(--text-secondary); font-size: 12px; font-weight: 500; }
+
+.naama-assist-choices { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.naama-assist-choice {
+  border: 1px solid var(--gold-line); background: #fff; color: var(--gold-deep);
+  border-radius: 999px; padding: 6px 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.naama-assist-choice:hover { background: var(--gold-soft); border-color: var(--gold-mid); }
+
+.naama-assist-form {
+  display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--gold-line); background: #fff;
+}
+.naama-assist-form input {
+  flex: 1; border: 1px solid var(--neutral-300); border-radius: 12px; padding: 10px 12px;
+  font: inherit; font-size: 14px; outline: none;
+}
+.naama-assist-form input:focus { border-color: var(--gold-mid); }
+.naama-assist-form button[type="submit"] {
+  width: 44px; height: 44px; border: 0; border-radius: 12px; cursor: pointer;
+  background: linear-gradient(180deg, #e0b53a, #8a6414); color: #fff;
+  display: grid; place-items: center;
+}
+.naama-assist-form button[type="submit"] svg {
+  width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;
+}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+@media print { .naama-assist { display: none !important; } }
+@media (max-width: 640px) {
+  .naama-assist-fab-label { display: none; }
+  .naama-assist-panel { left: 8px; right: 8px; width: auto; bottom: 100px; }
+}
