@@ -20,7 +20,8 @@
 .svc-related-count svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .svc-hero-side { display: flex; flex-direction: column; gap: 12px; }
-.svc-hero-side .btn { justify-content: center; width: 100%; padding: 10px 16px; }
+.svc-hero-actions { display: flex; flex-direction: column; gap: 8px; }
+.svc-hero-side .btn { justify-content: center; width: 100%; padding: 10px 16px; text-align: center; }
 .svc-facts {
   background: #fff; border-radius: 12px; box-shadow: var(--card-shadow); padding: 8px 4px;
 }
@@ -109,8 +110,6 @@
 .svc-missing { padding: 64px 0; text-align: center; }
 .svc-missing h1 { margin: 0 0 8px; font-size: 24px; }
 .svc-missing p { color: var(--text-secondary); }
-
-.svc-check-row { margin-top: 8px; justify-self: start; }
 
 @media (max-width: 1000px) {
   .svc-hero-grid, .svc-layout { grid-template-columns: 1fr; }

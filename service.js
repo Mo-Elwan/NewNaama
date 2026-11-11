@@ -287,9 +287,14 @@
       main.append(link);
     }
     const side = createElement("div", "svc-hero-side");
+    const actions = createElement("div", "svc-hero-actions");
     const request = createElement("a", "btn btn-primary", "طلب الخدمة");
     request.href = journeyUrl(service, action);
-    side.append(request, facts(beneficiaryTypes(service)));
+    const check = createElement("button", "btn btn-outline", "تحقق من انطباق الشروط عليك");
+    check.type = "button";
+    check.addEventListener("click", () => openEligibility());
+    actions.append(request, check);
+    side.append(actions, facts(beneficiaryTypes(service)));
     wrap.append(main, side);
     section.append(wrap);
     return section;
@@ -353,10 +358,6 @@
     panel.setAttribute("aria-labelledby", "tab-conditions");
     const terms = termsOf(questions);
     terms.forEach((text) => panel.append(termRow(text)));
-    const check = createElement("button", "btn btn-outline svc-check-row", "تحقق من انطباق الشروط عليك");
-    check.type = "button";
-    check.addEventListener("click", () => openEligibility());
-    panel.append(check);
     panel.append(createElement("p", "svc-note", "الشروط نموذجية للمراجعة الداخلية حتى تعتمدها الجهة المالكة لكل خدمة."));
     return panel;
   }

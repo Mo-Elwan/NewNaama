@@ -1,6 +1,7 @@
 /**
  * الترويسة والتذييل المشتركان بين صفحات النموذج، بنفس تصميم منصة نما.
  * الصفحة تحدد العنصر النشط في القائمة عبر <body data-page="guide|journey|events|brief">.
+ * تُحقن أيقونة مساعد نما الذهبي هنا؛ منطق التوجيه في assistant.js.
  * القوالب هنا نصوص ثابتة لا تحتوي على أي بيانات من ملف الخدمات، لذا لا خطر من innerHTML.
  */
 (function () {
@@ -120,6 +121,45 @@
     }));
   }
 
+  function ensureAssistant() {
+    if (document.querySelector(".naama-assist")) return;
+    if (!document.querySelector('link[href="assistant.css"]')) {
+      const link = document.createElement("link");
+      link.rel = "stylesheet";
+      link.href = "assistant.css";
+      document.head.appendChild(link);
+    }
+    const wrap = document.createElement("div");
+    wrap.className = "naama-assist";
+    wrap.innerHTML = `
+      <button type="button" class="naama-assist-fab" aria-controls="naama-assist-panel" aria-expanded="false" aria-label="مساعد نما الذهبي">
+        <span class="naama-assist-orb">
+          <img src="assets/golden-assistant.jpg" width="72" height="72" alt="">
+          <span class="naama-assist-spark" aria-hidden="true"></span>
+        </span>
+        <span class="naama-assist-fab-label">المساعد الذهبي</span>
+      </button>
+      <section id="naama-assist-panel" class="naama-assist-panel" hidden role="dialog" aria-labelledby="naama-assist-title">
+        <header class="naama-assist-head">
+          <img src="assets/golden-assistant.jpg" width="44" height="44" alt="">
+          <div>
+            <h2 id="naama-assist-title">مساعد نما الذهبي</h2>
+            <p>يوجهك إلى المسار لا إلى قائمة بحث</p>
+          </div>
+          <button type="button" class="naama-assist-close" aria-label="إغلاق المحادثة">×</button>
+        </header>
+        <div id="naama-assist-thread" class="naama-assist-thread" aria-live="polite"></div>
+        <form id="naama-assist-form" class="naama-assist-form">
+          <label class="sr-only" for="naama-assist-input">صف ما تريد إنجازه</label>
+          <input id="naama-assist-input" type="text" maxlength="200" autocomplete="off" placeholder="مثال: أبي أفتح مزرعة ...">
+          <button type="submit" aria-label="إرسال">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H6 M11 6l-6 6 6 6"/></svg>
+          </button>
+        </form>
+      </section>`;
+    document.body.appendChild(wrap);
+  }
+
   const header = document.getElementById("site-header");
   const footer = document.getElementById("site-footer");
   if (header) header.innerHTML = headerHtml(document.body.dataset.page);
@@ -127,4 +167,5 @@
     footer.innerHTML = footerHtml();
     bindFeedback(footer);
   }
+  ensureAssistant();
 })();
