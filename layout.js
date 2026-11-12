@@ -152,6 +152,14 @@
         <form id="naama-assist-form" class="naama-assist-form">
           <label class="sr-only" for="naama-assist-input">صف ما تريد إنجازه</label>
           <input id="naama-assist-input" type="text" maxlength="200" autocomplete="off" placeholder="مثال: أبي أفتح مزرعة ...">
+          <button type="button" id="naama-assist-mic" class="naama-assist-mic" aria-label="تحدث صوتياً" title="البحث الصوتي (تحدّث باللهجة الدارجة)">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+              <line x1="12" y1="19" x2="12" y2="23"/>
+              <line x1="8" y1="23" x2="16" y2="23"/>
+            </svg>
+          </button>
           <button type="submit" aria-label="إرسال">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12H6 M11 6l-6 6 6 6"/></svg>
           </button>

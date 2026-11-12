@@ -81,3 +81,9 @@ test("recordSearch stores zero-result queries for later review", () => {
   assert.ok(missed.length >= previous);
   assert.equal(missed[0].q, "خدمة غير موجودة زززز");
 });
+
+test("موعد finds both general appointment services including مقابلة المعالي", () => {
+  const names = namesFor("موعد");
+  assert.ok(names.includes("خدمة حجز موعد (ميعاد)"));
+  assert.ok(names.includes("خدمة مقابلة المعالي"));
+});
