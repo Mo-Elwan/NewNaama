@@ -449,7 +449,7 @@
     const route = parseRoute();
     el.search.placeholder = `ابحث في ${scopeLabel(route)} باسم الخدمة أو التصنيف الرئيسي أو الفرعي...`;
     el.searchSummary.textContent = "";
-    const crumbs = [{ label: "دليل الخدمات الإلكترونية", href: GUIDE_PAGE }, { label: "رحلة المستفيد", href: "#/" }];
+    const crumbs = [{ label: "دليل الخدمات الإلكترونية", href: GUIDE_PAGE }, { label: "مساعد الخدمات", href: "#/" }];
     let view;
     if (route.length === 0) {
       view = renderTypes(counts);

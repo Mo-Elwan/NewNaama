@@ -12,8 +12,8 @@
   const NAV_ITEMS = [
     { label: "الرئيسية", href: NAAMA, external: true },
     { label: "دليل الخدمات الإلكترونية", href: "index.html", page: "guide" },
-    { label: "رحلة المستفيد", href: "journey.html", page: "journey", isNew: true },
-    { label: "أحداث الحياة والأعمال", href: "events.html", page: "events", isNew: true },
+    { label: "مساعد الخدمات", href: "journey.html", page: "journey", isNew: true },
+    { label: "رحلات المستفيد", href: "events.html", page: "events", isNew: true },
     { label: "الأخبار و الأحداث", href: NAAMA, external: true },
     { label: "الأسئلة الشائعة", href: NAAMA, external: true },
     { label: "تواصل معنا", href: NAAMA, external: true },

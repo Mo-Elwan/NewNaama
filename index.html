@@ -24,47 +24,45 @@
   </section>
 
   <main class="container main-content">
-    <section class="journey-banner" aria-labelledby="journey-banner-title">
-      <div class="journey-banner-text">
-        <span class="journey-banner-tag">جديد</span>
-        <h2 id="journey-banner-title">رحلة المستفيد</h2>
-        <p>لا تعرف اسم الخدمة؟ اختر صفتك ونشاطك واحتياجك، وسنوصلك للخدمة المناسبة في 4 خطوات.</p>
-        <ol class="journey-steps">
-          <li><span>1</span>من أنت؟</li>
-          <li><span>2</span>فئتك</li>
-          <li><span>3</span>احتياجك</li>
-          <li><span>4</span>الخدمة</li>
-        </ol>
-        <a class="btn btn-white" href="journey.html">ابدأ رحلة المستفيد ←</a>
-      </div>
-      <nav id="journey-types" class="journey-types" aria-label="ابدأ الرحلة حسب نوع المستفيد"></nav>
-    </section>
+    <div class="hero-split-grid">
+      <!-- لوحة رحلات المستفيد (على اليمين) -->
+      <section class="journeys-panel" aria-labelledby="life-events-title">
+        <div class="journeys-panel-head">
+          <div class="journeys-title-group">
+            <h2 id="life-events-title">رحلات المستفيد</h2>
+            <span class="hint">اختر نوعك أولاً، ثم هدفك، وسترتب لك الخدمات التي تحتاجها خطوة بخطوة</span>
+          </div>
+          <a class="link-button see-all" href="events.html">كل الأحداث ←</a>
+        </div>
+        <nav id="life-events-list" class="journeys-cards-grid" aria-label="رحلات المستفيد"></nav>
+      </section>
 
-    <section class="life-events" aria-labelledby="life-events-title">
-      <div class="proactive-head">
-        <h2 id="life-events-title">ماذا تريد أن تنجز؟</h2>
-        <span class="hint">اختر نوعك أولًا، ثم هدفك، وسنرتب لك الخدمات التي تحتاجها خطوة بخطوة.</span>
-        <a class="link-button see-all" href="events.html">كل الأحداث ←</a>
-      </div>
-      <div id="life-event-types" class="type-tabs" role="group" aria-label="نوع المستفيد"></div>
-      <nav id="life-events-list" class="life-events-list" aria-label="أحداث الحياة والأعمال"></nav>
-    </section>
-
-    <section class="proactive" aria-labelledby="proactive-title">
-      <div class="proactive-head">
-        <h2 id="proactive-title">خدماتك الاستباقية</h2>
-        <span class="hint">نذكّرك بالخدمات المستحقة قبل موعدها. (بيانات توضيحية لمستفيد افتراضي، تظهر بياناته الفعلية بعد تسجيل الدخول)</span>
-      </div>
-      <div id="proactive-list" class="proactive-list"></div>
-    </section>
-
-    <div class="search-holder">
-      <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
-      </svg>
-      <input id="guide-search" type="search" autocomplete="off" placeholder="ابحث باسم الخدمة أو بكلمات دارجة مثل رخصة بئر ..." aria-label="ابحث في الخدمات">
+      <!-- بطاقة مساعد الخدمات (على اليسار) -->
+      <section class="assistant-banner" aria-labelledby="assistant-banner-title">
+        <div class="assistant-banner-content">
+          <h2 id="assistant-banner-title">مساعد الخدمات</h2>
+          <p>لا تعرف اسم الخدمة؟ اختر صفتك ونشاطك واحتياجك، وسنوصلك للخدمة المناسبة في 4 خطوات.</p>
+          <ol class="assistant-steps">
+            <li><span>1</span>من أنت؟</li>
+            <li><span>2</span>فئتك</li>
+            <li><span>3</span>احتياجك</li>
+            <li><span>4</span>الخدمة</li>
+          </ol>
+          <a class="btn btn-assistant-start" href="journey.html">ابدأ الآن ←</a>
+        </div>
+      </section>
     </div>
-    <div id="search-suggestions" class="search-suggestions" aria-label="الأكثر بحثًا"></div>
+
+    <section class="services-search-area" aria-labelledby="search-services-title">
+      <h2 id="search-services-title" class="services-search-title">بحث في الخدمات</h2>
+      <div class="search-holder">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path>
+        </svg>
+        <input id="guide-search" type="search" autocomplete="off" placeholder="ابحث باسم الخدمة أو بكلمات دارجة مثل رخصة بئر ..." aria-label="ابحث في الخدمات">
+      </div>
+      <div id="search-suggestions" class="search-suggestions" aria-label="الأكثر بحثًا"></div>
+    </section>
 
     <div class="guide-layout">
       <aside class="filters" aria-labelledby="filters-title">

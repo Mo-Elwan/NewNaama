@@ -62,6 +62,7 @@
   }
 
   function renderJourneyTypes() {
+    if (!el.journeyTypes) return;
     const counts = countByType();
     for (const [typeKey, type] of Object.entries(data.taxonomy)) {
       const link = createElement("a", "journey-type");
@@ -163,34 +164,40 @@
   function lifeEventChip(event, stepsLabel) {
     const link = createElement("a", "life-event-chip");
     link.href = `events.html#/${event.type}/${event.id}`;
-    link.append(icon(event.type), createElement("span", "title", event.title),
-      createElement("span", "count", stepsLabel(event.steps.length)));
+    link.append(icon(event.type), createElement("span", "title", event.title));
     return link;
   }
 
   /** المستفيد يختار نوعه أولًا، ثم تظهر أحداث هذا النوع فقط. */
   function renderLifeEvents() {
+    if (!el.lifeEvents) return;
     if (!window.NaamaLifeEvents) {
       console.warn("لم يُحمَّل life-events.js؛ سيُخفى قسم أحداث الحياة والأعمال.");
-      el.lifeEvents.closest("section").hidden = true;
+      const sec = el.lifeEvents.closest("section");
+      if (sec) sec.hidden = true;
       return;
     }
     const { eventsForType, stepsLabel, eventsLabel } = window.NaamaLifeEvents;
     const types = Object.keys(data.taxonomy).filter((typeKey) => eventsForType(typeKey).length);
-    el.lifeEvents.closest("section").hidden = !types.length;
+    const sec = el.lifeEvents.closest("section");
+    if (sec) sec.hidden = !types.length;
     const showType = (typeKey) => {
-      el.lifeEventTypes.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.type === typeKey)));
+      if (el.lifeEventTypes) {
+        el.lifeEventTypes.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.type === typeKey)));
+      }
       el.lifeEvents.replaceChildren(...eventsForType(typeKey).map((event) => lifeEventChip(event, stepsLabel)));
     };
-    el.lifeEventTypes.replaceChildren(...types.map((typeKey) => {
-      const button = createElement("button", "type-tab");
-      button.type = "button";
-      button.dataset.type = typeKey;
-      button.append(icon(typeKey), createElement("span", null, data.taxonomy[typeKey].label),
-        createElement("span", "count", eventsLabel(eventsForType(typeKey).length)));
-      button.addEventListener("click", () => showType(typeKey));
-      return button;
-    }));
+    if (el.lifeEventTypes) {
+      el.lifeEventTypes.replaceChildren(...types.map((typeKey) => {
+        const button = createElement("button", "type-tab");
+        button.type = "button";
+        button.dataset.type = typeKey;
+        button.append(icon(typeKey), createElement("span", null, data.taxonomy[typeKey].label),
+          createElement("span", "count", eventsLabel(eventsForType(typeKey).length)));
+        button.addEventListener("click", () => showType(typeKey));
+        return button;
+      }));
+    }
     if (types.length) showType(types[0]);
   }
 
@@ -231,6 +238,7 @@
   }
 
   function renderProactive() {
+    if (!el.proactive) return;
     const servicesById = new Map(services.map((s) => [s.id, s]));
     const cards = PROACTIVE_SAMPLES.map((sample) => {
       const service = servicesById.get(sample.serviceId);

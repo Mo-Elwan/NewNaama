@@ -18,7 +18,7 @@
   const { describeFee, formatAmount } = window.NaamaEligibility;
   const STORAGE_PREFIX = "naama.lifeEvent.";
   const GUIDE_CRUMB = { label: "دليل الخدمات الإلكترونية", href: "index.html" };
-  const EVENTS_CRUMB = { label: "أحداث الحياة والأعمال", href: "#/" };
+  const EVENTS_CRUMB = { label: "رحلات المستفيد", href: "#/" };
   const el = {
     breadcrumb: document.getElementById("breadcrumb"),
     title: document.getElementById("page-title"),

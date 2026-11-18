@@ -448,3 +448,231 @@ button, input, select { font-family: inherit; }
   .service-list { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
 }
+
+
+/* ==========================================================================
+   التصميم الجديد للصفحة الرئيسية (رحلات المستفيد ومساعد الخدمات والبحث)
+   ========================================================================== */
+
+.hero-split-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: stretch;
+  margin-bottom: 28px;
+}
+
+/* ---------- لوحة رحلات المستفيد (على اليمين في RTL) ---------- */
+.journeys-panel {
+  background: #fff;
+  border: 1px solid var(--neutral-300);
+  border-radius: 16px;
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+}
+
+.journeys-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.journeys-title-group {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.journeys-title-group h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--primary-dark);
+}
+
+.journeys-title-group .hint {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.journeys-panel-head .see-all {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  text-decoration: none;
+  margin-inline-start: auto;
+  transition: color .15s;
+}
+
+.journeys-panel-head .see-all:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+/* شبكة بطاقات الرحلات (4 أعمدة كما في الصورة) */
+.journeys-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  flex: 1;
+}
+
+.life-event-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  padding: 12px 6px;
+  min-height: 72px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid var(--neutral-300);
+  color: var(--text-default);
+  text-decoration: none;
+  transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+
+.life-event-chip:hover, .life-event-chip:focus-visible {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(20, 87, 58, 0.08);
+  outline: none;
+}
+
+.life-event-chip svg {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke .15s;
+}
+
+.life-event-chip:hover svg {
+  stroke: var(--primary);
+}
+
+.life-event-chip .title {
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--text-default);
+}
+
+.life-event-chip .count {
+  display: none !important;
+}
+
+/* ---------- بطاقة مساعد الخدمات (على اليسار في RTL) ---------- */
+.assistant-banner {
+  background: linear-gradient(135deg, #0d462b 0%, #156945 100%);
+  border-radius: 16px;
+  padding: 22px 24px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 10px 25px rgba(20, 87, 58, 0.18);
+}
+
+.assistant-banner-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.assistant-banner-content h2 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.assistant-banner-content p {
+  margin: 0 0 14px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.assistant-steps {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 0;
+  margin: 0 0 16px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.assistant-steps li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.assistant-steps span {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  font-size: 12px;
+}
+
+.btn-assistant-start {
+  background: #fff;
+  color: #0d462b;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 8px 24px;
+  border-radius: 8px;
+  align-self: flex-start;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background .15s, transform .15s;
+}
+
+.btn-assistant-start:hover {
+  background: #ebf7f0;
+  transform: translateY(-1px);
+}
+
+/* ---------- قسم البحث في الخدمات ---------- */
+.services-search-area {
+  margin-top: 26px;
+  margin-bottom: 24px;
+}
+
+.services-search-title {
+  margin: 0 0 14px;
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--text-default);
+}
+
+@media (max-width: 960px) {
+  .hero-split-grid {
+    grid-template-columns: 1fr;
+  }
+  .journeys-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
