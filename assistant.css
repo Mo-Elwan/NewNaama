@@ -22,7 +22,7 @@
 }
 
 .naama-assist-fab {
-  position: fixed; left: 24px; bottom: 24px; z-index: 80;
+  position: fixed; left: 24px; bottom: 24px; z-index: 99998;
   width: 76px; height: 76px; padding: 0; border: 0; border-radius: 50%;
   cursor: pointer; background: transparent;
   filter: drop-shadow(0 14px 28px rgba(90, 58, 8, .38));
@@ -61,7 +61,7 @@
 .naama-assist-fab[aria-expanded="true"] .naama-assist-fab-label { display: none; }
 
 .naama-assist-panel {
-  position: fixed; left: 24px; bottom: 114px; z-index: 81;
+  position: fixed; left: 24px; bottom: 114px; z-index: 99999;
   width: min(420px, calc(100vw - 32px)); height: min(600px, calc(100vh - 140px));
   background: #fff; border-radius: 24px; overflow: hidden;
   display: flex; flex-direction: column;

@@ -93,7 +93,7 @@
   }
 
   function wantsJourney(norm) {
-    return /ما اعرف اسم|ما ادري اسم|رحل المستفيد|ابدأ الرحل|ابدا الرحل|من وين ابدأ|من وين ابدا/.test(norm);
+    return /ما اعرف اسم|ما ادري اسم|مساعد الخدم|رحل المستفيد|ابدأ الرحل|ابدا الرحل|من وين ابدأ|من وين ابدا/.test(norm);
   }
 
   function isConditionsIntent(norm) {
@@ -458,7 +458,7 @@
       const fixSvc = fixSvcName ? findService(fixSvcName, services) : null;
 
       let primary = null;
-      const chips = ["إعادة فحص الأهلية 🔄", "كم الرسوم؟", "بدء رحلة المستفيد"];
+      const chips = ["إعادة فحص الأهلية 🔄", "كم الرسوم؟", "مساعد الخدمات"];
       if (fixSvc) {
         primary = {
           title: `ابدأ بهذا أولاً: ${fixSvc.name}`,
@@ -554,7 +554,7 @@
         hint: "استعراض المسار الكامل خطوة بخطوة مع الشروط",
       },
       steps,
-      questions: ["ما هي شروط المسار؟", "كم رسوم الخدمات؟", "ابدأ رحلة المستفيد"],
+      questions: ["ما هي شروط المسار؟", "كم رسوم الخدمات؟", "مساعد الخدمات"],
       journey: false,
     };
   }
@@ -818,7 +818,7 @@
               kind: "guide",
               primary: { title: nextAction.serviceName, href: `index.html?q=${encodeURIComponent(nextAction.serviceName)}`, hint: "ابحث عن تفاصيل الخدمة" },
               steps: [],
-              questions: ["ما هي الشروط والأهلية؟", "كم الرسوم؟", "بدء رحلة المستفيد"],
+              questions: ["ما هي الشروط والأهلية؟", "كم الرسوم؟", "مساعد الخدمات"],
               journey: false,
             };
           }
@@ -829,9 +829,9 @@
     // 4. توجيه لرحلة المستفيد العامة
     if (wantsJourney(norm)) {
       return {
-        text: "رحلة المستفيد ترتّب لك الخدمات بحسب صفتك (فرد، شركة، جهة) ونشاطك، وتوصلك للخدمة خلال 4 خطوات واضحة.",
+        text: "مساعد الخدمات يرتّب لك الخدمات بحسب صفتك (فرد، شركة، جهة) ونشاطك، وتوصلك للخدمة خلال 4 خطوات واضحة.",
         kind: "guide",
-        primary: { title: "ابدأ رحلة المستفيد الآن", href: "journey.html", hint: "من أنت؟ ← فئتك ← احتياجك ← الخدمة" },
+        primary: { title: "ابدأ مساعد الخدمات الآن", href: "journey.html", hint: "من أنت؟ ← فئتك ← احتياجك ← الخدمة" },
         steps: [],
         questions: goals,
         journey: true,
@@ -1355,7 +1355,7 @@
       if (reply.journey && !reply.primary) {
         const link = createElement("a", "naama-assist-primary");
         link.href = "journey.html";
-        link.append(createElement("strong", null, "🚀 ابدأ رحلة المستفيد"));
+        link.append(createElement("strong", null, "🚀 ابدأ مساعد الخدمات"));
         box.append(link);
       }
 
@@ -1593,6 +1593,15 @@
       renderReply(initial);
       chatLog.push({ role: "bot", reply: initial });
     }
+
+    api.open = () => setOpen(true);
+    api.close = () => setOpen(false);
+    api.openWithQuery = (query) => {
+      setOpen(true);
+      if (query && typeof query === "string" && query.trim()) {
+        ask(query.trim());
+      }
+    };
   }
 
   if (typeof module === "object" && module.exports) module.exports = api;

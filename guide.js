@@ -48,6 +48,7 @@
     lifeEvents: document.getElementById("life-events-list"),
     lifeEventTypes: document.getElementById("life-event-types"),
     suggestions: document.getElementById("search-suggestions"),
+    dropdown: document.getElementById("live-search-dropdown"),
   };
   const state = { query: "", page: 1, selected: Object.fromEntries(FILTER_GROUPS.map((g) => [g.key, new Set()])) };
 
@@ -134,6 +135,7 @@
     el.search.value = query;
     state.page = 1;
     render();
+    renderLiveSearchDropdown(query);
   }
 
   function emptyResults() {
@@ -331,9 +333,201 @@
     render();
   }
 
+
+  // ---------- القائمة الفورية الذكية للبحث السريع (Live Search Dropdown) ----------
+
+  function closeLiveDropdown() {
+    if (el.dropdown) {
+      el.dropdown.hidden = true;
+      el.dropdown.replaceChildren();
+    }
+  }
+
+  function renderLiveSearchDropdown(query) {
+    if (!el.dropdown) return;
+    const cleanQuery = (query || "").trim();
+    const tokens = tokenize(cleanQuery);
+    if (!tokens.length || cleanQuery.length < 2) {
+      closeLiveDropdown();
+      return;
+    }
+
+    // 1. أبرز الخدمات المطابقة (حتى 5 خدمات)
+    const hits = window.NaamaSearch.search(searchIndex, cleanQuery);
+    const topServices = hits.slice(0, 5).map((h) => h.service);
+
+    // 2. رحلات المستفيد المرتبطة
+    const allEvents = (window.NaamaLifeEvents && window.NaamaLifeEvents.LIFE_EVENTS) || [];
+    const normalizedQuery = window.NaamaDom.normalizeArabic(cleanQuery);
+    const matchedEvents = allEvents.filter((ev) => {
+      const titleNorm = window.NaamaDom.normalizeArabic(ev.title);
+      const summNorm = window.NaamaDom.normalizeArabic(ev.summary || "");
+      if (titleNorm.includes(normalizedQuery) || summNorm.includes(normalizedQuery)) return true;
+      return ev.steps.some((st) => {
+        const stepNorm = window.NaamaDom.normalizeArabic(st.title + " " + st.service);
+        return tokens.some((tok) => stepNorm.includes(tok));
+      });
+    }).slice(0, 2);
+
+    if (!topServices.length && !matchedEvents.length) {
+      const emptyWrap = createElement("div", "live-dropdown-empty");
+      emptyWrap.append(
+        createElement("p", null, `لم نجد نتائج فورية مباشرة لـ «${cleanQuery}».`),
+        createElement("span", "hint", "يمكنك الاستعانة بمساعد نما الذهبي لإرشادك وصياغة طلبك.")
+      );
+      const askBtn = createElement("button", "btn btn-assistant-pill", "🤖 اسأل مساعد نما الذهبي");
+      askBtn.type = "button";
+      askBtn.addEventListener("click", () => {
+        closeLiveDropdown();
+        if (window.NaamaAssistant && window.NaamaAssistant.openWithQuery) {
+          window.NaamaAssistant.openWithQuery(cleanQuery);
+        }
+      });
+      emptyWrap.append(askBtn);
+      el.dropdown.replaceChildren(emptyWrap);
+      el.dropdown.hidden = false;
+      return;
+    }
+
+    const container = document.createDocumentFragment();
+
+    // القسم 1: أبرز الخدمات والتقديم المباشر
+    if (topServices.length) {
+      const secServices = createElement("div", "live-dropdown-section");
+      const secHead = createElement("div", "live-dropdown-head");
+      secHead.append(createElement("span", "live-dropdown-title", "📋 أبرز الخدمات المطابقة (تقديم مباشر)"));
+      secHead.append(createElement("span", "live-dropdown-count", `${hits.length} خدمة`));
+      secServices.append(secHead);
+
+      const itemsList = createElement("div", "live-dropdown-list");
+      for (const service of topServices) {
+        const row = createElement("div", "live-service-row");
+
+        // بيانات الخدمة
+        const info = createElement("div", "live-service-info");
+        const titleLink = createElement("a", "live-service-name", service.name);
+        titleLink.href = serviceUrl(service);
+        const badges = createElement("div", "live-service-badges");
+        if (service.sector) badges.append(createElement("span", "badge", service.sector));
+        if (service.category) badges.append(createElement("span", "badge", service.category));
+        info.append(titleLink, badges);
+
+        // أزرار الإجراء السريع
+        const actions = createElement("div", "live-service-actions");
+
+        // 1. زر التقديم المباشر بنقرة واحدة
+        const applyBtn = createElement("a", "btn btn-apply-direct", "⚡ تقديم مباشر");
+        applyBtn.href = window.NaamaDom.urlOrPlatform(service.url);
+        applyBtn.target = "_blank";
+        applyBtn.rel = "noopener noreferrer";
+        applyBtn.title = "الانتقال فوراً لتقديم الطلب عبر منصة نما";
+
+        // 2. زر فحص الأهلية الذكي للشروط
+        const eligBtn = createElement("button", "btn btn-elig-sm", "🔍 فحص الأهلية");
+        eligBtn.type = "button";
+        eligBtn.title = "فحص شروط الخدمة خطوة بخطوة في المساعد الذهبي";
+        eligBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          closeLiveDropdown();
+          if (window.NaamaAssistant && window.NaamaAssistant.openWithQuery) {
+            window.NaamaAssistant.openWithQuery(`شروط ${service.name}`);
+          }
+        });
+
+        // 3. زر التفاصيل
+        const detailsBtn = createElement("a", "btn btn-light-sm", "التفاصيل 📄");
+        detailsBtn.href = serviceUrl(service);
+
+        actions.append(applyBtn, eligBtn, detailsBtn);
+        row.append(info, actions);
+        itemsList.append(row);
+      }
+      secServices.append(itemsList);
+      container.append(secServices);
+    }
+
+    // القسم 2: رحلات المستفيد المرتبطة
+    if (matchedEvents.length) {
+      const secEvents = createElement("div", "live-dropdown-section");
+      const secHead = createElement("div", "live-dropdown-head");
+      secHead.append(createElement("span", "live-dropdown-title", "🚀 رحلات المستفيد المرتبطة بطلبك"));
+      secEvents.append(secHead);
+
+      const eventsList = createElement("div", "live-events-horizontal");
+      for (const ev of matchedEvents) {
+        const evCard = createElement("a", "live-event-chip-sm");
+        evCard.href = `events.html#/${ev.type}/${ev.id}`;
+        evCard.append(icon(ev.type));
+        const evText = createElement("div", "live-event-sm-meta");
+        evText.append(
+          createElement("strong", null, ev.title),
+          createElement("span", null, `${ev.steps.length} خطوات مرتبة كاملة`)
+        );
+        evCard.append(evText);
+        eventsList.append(evCard);
+      }
+      secEvents.append(eventsList);
+      container.append(secEvents);
+    }
+
+    // القسم 3: جسر المساعد الذهبي وفحص الأهلية
+    const secAi = createElement("div", "live-dropdown-ai-bridge");
+    const aiText = createElement("div", "live-ai-bridge-text");
+    aiText.append(
+      createElement("strong", null, "🤖 تريد التحقق من انطباق الشروط عليك؟"),
+      createElement("span", null, `اسأل مساعد نما الذهبي فوراً عن «${cleanQuery}» وسيفحص أهليتك تفاعلياً`)
+    );
+    const aiAction = createElement("button", "btn btn-ai-bridge", "فحص الأهلية في الشات ←");
+    aiAction.type = "button";
+    aiAction.addEventListener("click", () => {
+      closeLiveDropdown();
+      if (window.NaamaAssistant && window.NaamaAssistant.openWithQuery) {
+        window.NaamaAssistant.openWithQuery(cleanQuery);
+      }
+    });
+    secAi.append(aiText, aiAction);
+    container.append(secAi);
+
+    // تذييل القائمة: عرض النتائج الكاملة بالأسفل
+    const footer = createElement("div", "live-dropdown-footer");
+    const seeAllBtn = createElement("button", "live-dropdown-see-all", `عرض جميع النتائج في الدليل (${hits.length} خدمة) ↓`);
+    seeAllBtn.type = "button";
+    seeAllBtn.addEventListener("click", () => {
+      closeLiveDropdown();
+      const listEl = document.getElementById("guide-list");
+      if (listEl) listEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    footer.append(seeAllBtn);
+    container.append(footer);
+
+    el.dropdown.replaceChildren(container);
+    el.dropdown.hidden = false;
+  }
+
   state.query = new URLSearchParams(location.search).get("q") || "";
   el.search.value = state.query;
-  el.search.addEventListener("input", () => applyQuery(el.search.value));
+  el.search.addEventListener("input", () => {
+    applyQuery(el.search.value);
+    renderLiveSearchDropdown(el.search.value);
+  });
+  el.search.addEventListener("focus", () => {
+    if (el.search.value.trim().length >= 2) {
+      renderLiveSearchDropdown(el.search.value);
+    }
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".search-holder")) {
+      closeLiveDropdown();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeLiveDropdown();
+    }
+  });
+
   el.sort.addEventListener("change", render);
   el.clear.addEventListener("click", clearFilters);
   renderJourneyTypes();
@@ -341,4 +535,7 @@
   renderProactive();
   renderFilters();
   render();
+  if (state.query && state.query.trim().length >= 2) {
+    renderLiveSearchDropdown(state.query);
+  }
 })();
